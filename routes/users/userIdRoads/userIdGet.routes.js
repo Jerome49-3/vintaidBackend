@@ -1,0 +1,34 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const router = express.Router();
+const isAuthenticated = require("../../../middleware/isAuthenticated.js");
+//models
+const User = require("../../../models/User.js");
+
+router.get("/users/:id", isAuthenticated, async (req, res) => {
+  // console.log("req.user:", req.user);
+  const userId = req.params.id;
+  console.log("userId:", userId);
+  if (userId !== undefined) {
+    try {
+      const user = await User.findById(userId);
+      console.log("user in /users:id:", user);
+      res.status(200).json({
+        username: user.account.username,
+        avatar: user.account.avatar,
+        email: user.email,
+        newsletter: user.newsletter,
+        date: user.date,
+        isAdmin: user.isAdmin,
+        id: user._id,
+      });
+    } catch (error) {
+      console.log("error in catch:", error);
+      return res.status(400).json({ message: "somethings went wrong" });
+    }
+  } else {
+    return res.status(400).json({ message: "Bad request" });
+  }
+});
+
+module.exports = router;
