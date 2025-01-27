@@ -123,15 +123,15 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
       await findUserId.save();
       res.cookie("refreshTokenV", refreshToken, {
         httpOnly: false,
-        secure: true, // mettre à true en prod
-        sameSite: "strict", // mettre à strict en prod
-        maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
+        secure: true,
+        sameSite: "none",
+        maxAge: 2 * 24 * 60 * 60 * 1000,
       });
       res.cookie("accessTokenV", accessToken, {
         httpOnly: false,
-        secure: true, // mettre à true en prod
-        sameSite: "strict", // mettre à strict en prod
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
+        secure: true,
+        sameSite: "none",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       // res.cookie("refreshTokenV", refreshToken, {
       //   httpOnly: false,
