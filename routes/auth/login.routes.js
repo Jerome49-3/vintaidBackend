@@ -100,10 +100,7 @@ router.post("/login", fileUpload(), async (req, res) => {
       sameSite: "Strict", // mettre à strict en prod
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
     });
-    res.status(200).json({
-      message:
-        "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
-    });
+    res.status(200).json("login succesfully");
     console.log(
       "accessToken in /login:",
       accessToken,
