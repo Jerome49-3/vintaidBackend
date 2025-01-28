@@ -29,32 +29,33 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       user.token = accessToken;
       user.emailIsConfirmed = true;
       await user.save();
+      //PRODUCTION
       // res.cookie("refreshTokenV", refreshToken, {
       //   httpOnly: false,
-      //   secure: false, // mettre à true en prod
+      //   secure: true, // mettre à true en prod
       //   sameSite: "lax", // mettre à strict en prod
       //   maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
       // });
       // res.cookie("accessTokenV", accessToken, {
       //   httpOnly: false,
-      //   secure: false, // mettre à true en prod
+      //   secure: true, // mettre à true en prod
       //   sameSite: "lax", // mettre à strict en prod
       //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
       // });
+      //DEVELLOPPEMENT
       res.cookie("refreshTokenV", refreshToken, {
         httpOnly: false,
-        secure: true,
-        sameSite: "none",
-        maxAge: 2 * 24 * 60 * 60 * 1000,
+        secure: true, // mettre à true en prod
+        sameSite: "Strict", // mettre à strict en prod
+        maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
       });
       res.cookie("accessTokenV", accessToken, {
         httpOnly: false,
-        secure: true,
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        secure: true, // mettre à true en prod
+        sameSite: "Strict", // mettre à strict en prod
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
       });
       res.status(200).json({
-        token: accessToken,
         message:
           "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
       });

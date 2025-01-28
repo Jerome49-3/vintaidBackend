@@ -123,35 +123,27 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
       await findUserId.save();
       res.cookie("refreshTokenV", refreshToken, {
         httpOnly: false,
-        secure: true,
-        sameSite: "none",
-        maxAge: 2 * 24 * 60 * 60 * 1000,
+        secure: true, // mettre à true en prod
+        sameSite: "Strict", // mettre à strict en prod
+        maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
       });
       res.cookie("accessTokenV", accessToken, {
         httpOnly: false,
-        secure: true,
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        secure: true, // mettre à true en prod
+        sameSite: "Strict", // mettre à strict en prod
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
       });
-      // res.cookie("refreshTokenV", refreshToken, {
-      //   httpOnly: false,
-      //   secure: false, // mettre à true en prod
-      //   sameSite: "lax", // mettre à strict en prod
-      //   maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
-      // });
-      // res.cookie("accessTokenV", accessToken, {
-      //   httpOnly: false,
-      //   secure: false, // mettre à true en prod
-      //   sameSite: "lax", // mettre à strict en prod
-      //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
-      // });
-      // console.log(
-      //   "accessToken in /users/:id (PUT):",
-      //   accessToken,
-      //   "\n",
-      //   "refreshToken in /users/:id (PUT):",
-      //   refreshToken
-      // );
+      res.status(200).json({
+        message:
+          "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
+      });
+      console.log(
+        "accessToken in /users/:id (PUT):",
+        accessToken,
+        "\n",
+        "refreshToken in /users/:id (PUT):",
+        refreshToken
+      );
       res.status(200).json({ message: "profile updated" });
     }
   } catch (error) {

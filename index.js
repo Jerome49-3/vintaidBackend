@@ -14,8 +14,7 @@ mongoose.connect(process.env.MONGODB_URI);
 const cors = require("cors");
 app.use(
   cors({
-    origin: "https://vintaid.netlify.app",
-    // origin: "http://localhost:5173",
+    origin: process.env.URL_FRONTEND,
     credentials: true,
   })
 );
