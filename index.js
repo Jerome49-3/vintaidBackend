@@ -6,15 +6,30 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
+//************ ENVIRONMENT *****************//
+const ENVIRONMENT = process.env.NODE_ENV;
+
 //************ CONFIG CORS *****************//
 const cors = require("cors");
-app.use(
-  cors({
-    origin: "https://vintaid.netlify.app",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+if (process.env.NODE_ENV === "development") {
+  app.use(
+    cors({
+      origin: "https://localhost:3000",
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE"],
+    })
+  );
+}
+
+if (process.env.NODE_ENV === "production") {
+  app.use(
+    cors({
+      origin: "https://vintaid.netlify.app",
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE"],
+    })
+  );
+}
 
 //************ CONFIG MONGOOSE *****************//
 const mongoose = require("mongoose");

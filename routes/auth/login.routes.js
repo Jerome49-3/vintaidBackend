@@ -95,20 +95,26 @@ router.post("/login", fileUpload(), async (req, res) => {
       "refreshToken in /login:",
       refreshToken
     );
-    res.cookie("refreshTokenV", refreshToken, {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: 2 * 24 * 60 * 60 * 1000,
-    });
-    res.cookie("accessTokenV", accessToken, {
-      httpOnly: false,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    if (process.env.NODE_ENV === "development") {
+      res.cookie("accessTokenV", accessToken, {
+        httpOnly: true,
+        path: "/",
+        domain: "localhost",
+        secure: false,
+        sameSite: "lax",
+        maxAge: 3600000, // 1 hour
+      });
+    }
+
+    if (process.env.NODE_ENV === "production") {
+      res.cookie("accessTokenV", accessToken, {
+        httpOnly: true,
+        path: "/",
+        secure: true,
+        sameSite: "none",
+        maxAge: 3600000, // 1 hour
+      });
+    }
     res.status(200).json("login succesfully");
   } catch (error) {
     console.log("error in catch:", error);
