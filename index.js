@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGODB_URI);
 const cors = require("cors");
 app.use(
   cors({
-    origin: process.env.URL_FRONTEND,
+    origin: process.env.URL_CORS_FRONTEND,
     credentials: true,
   })
 );
