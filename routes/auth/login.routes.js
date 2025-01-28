@@ -99,12 +99,14 @@ router.post("/login", fileUpload(), async (req, res) => {
       httpOnly: false,
       secure: true,
       sameSite: "none",
+      path: "/",
       maxAge: 2 * 24 * 60 * 60 * 1000,
     });
     res.cookie("accessTokenV", accessToken, {
       httpOnly: false,
       secure: true,
       sameSite: "none",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     res.status(200).json("login succesfully");
