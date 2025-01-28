@@ -96,13 +96,19 @@ router.post("/login", fileUpload(), async (req, res) => {
       "refreshToken in /login:",
       refreshToken
     );
-    res
-      .status(200)
-      .json({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        message: "login succesfully",
-      });
+    res.cookie("refreshTokenV", refreshToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+      maxAge: 2 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie("accessTokenV", accessToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.status(200).json("login succesfully");
   } catch (error) {
     console.log("error in catch:", error);
     return res.status(500).json({ message: "Something went wrong." });
