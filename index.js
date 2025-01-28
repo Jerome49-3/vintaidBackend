@@ -11,7 +11,6 @@ const cors = require("cors");
 app.use(
   cors({
     origin: "https://vintaid.netlify.app",
-    credentials: true,
   })
 );
 

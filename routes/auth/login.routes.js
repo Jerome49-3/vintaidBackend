@@ -88,18 +88,6 @@ router.post("/login", fileUpload(), async (req, res) => {
     const { accessToken, refreshToken } = await createToken(user);
     user.token = accessToken;
     await user.save();
-    res.cookie("refreshTokenV", refreshToken, {
-      httpOnly: false,
-      secure: true, // mettre à true en prod
-      sameSite: "none", // mettre à strict en prod
-      maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
-    });
-    res.cookie("accessTokenV", accessToken, {
-      httpOnly: false,
-      secure: true, // mettre à true en prod
-      sameSite: "none", // mettre à strict en prod
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
-    });
     res.status(200).json("login succesfully");
     console.log(
       "accessToken in /login:",
@@ -108,7 +96,13 @@ router.post("/login", fileUpload(), async (req, res) => {
       "refreshToken in /login:",
       refreshToken
     );
-    res.status(200).json("login succesfully");
+    res
+      .status(200)
+      .json({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        message: "login succesfully",
+      });
   } catch (error) {
     console.log("error in catch:", error);
     return res.status(500).json({ message: "Something went wrong." });

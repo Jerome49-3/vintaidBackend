@@ -121,18 +121,6 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
       const { accessToken, refreshToken } = await createToken(findUserId);
       findUserId.token = accessToken;
       await findUserId.save();
-      res.cookie("refreshTokenV", refreshToken, {
-        httpOnly: false,
-        secure: true, // mettre à true en prod
-        sameSite: "none", // mettre à strict en prod
-        maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
-      });
-      res.cookie("accessTokenV", accessToken, {
-        httpOnly: false,
-        secure: true, // mettre à true en prod
-        sameSite: "none", // mettre à strict en prod
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
-      });
       res.status(200).json({
         message:
           "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
@@ -144,7 +132,13 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
         "refreshToken in /users/:id (PUT):",
         refreshToken
       );
-      res.status(200).json({ message: "profile updated" });
+      res
+        .status(200)
+        .json({
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          message: "profile updated",
+        });
     }
   } catch (error) {
     console.log("error:", error);
