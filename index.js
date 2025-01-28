@@ -6,18 +6,18 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
-//************ CONFIG MONGOOSE *****************//
-const mongoose = require("mongoose");
-mongoose.connect(process.env.MONGODB_URI);
-
 //************ CONFIG CORS *****************//
 const cors = require("cors");
 app.use(
   cors({
-    origin: process.env.URL_CORS_FRONTEND,
+    origin: "https://vintaid.netlify.app",
     credentials: true,
   })
 );
+
+//************ CONFIG MONGOOSE *****************//
+const mongoose = require("mongoose");
+mongoose.connect(process.env.MONGODB_URI);
 
 //************ CONFIG STRIPE *****************//
 const stripe = require("stripe")(process.env.STRIPE_KEY_SECRET);
