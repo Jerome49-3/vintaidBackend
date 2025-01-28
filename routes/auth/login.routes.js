@@ -88,7 +88,6 @@ router.post("/login", fileUpload(), async (req, res) => {
     const { accessToken, refreshToken } = await createToken(user);
     user.token = accessToken;
     await user.save();
-    res.status(200).json("login succesfully");
     console.log(
       "accessToken in /login:",
       accessToken,
