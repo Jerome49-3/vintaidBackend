@@ -1,8 +1,14 @@
 const { Resend } = require("resend");
 // console.log("resend:", Resend);
 const resend = new Resend(process.env.RESEND_API_KEY);
+const generateCode = require("./generateCode");
 
-const sendEmail = async (user, username, email, code) => {
+const sendEmail = async (user) => {
+  const username = user.account.username;
+  const email = user.email;
+  const code = generateCode(6);
+  user.code = code;
+  await user.save();
   console.log("code on sendMail:", code);
   console.log("user on sendMail:", user);
   console.log("username on sendMail:", username);

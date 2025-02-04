@@ -92,16 +92,8 @@ router.put("/profile/:id", isAuthenticated, async (req, res) => {
           findUserId.newsletter = newsletter;
         }
       }
-      const token = jwt.sign(
-        {
-          _id: findUserId.id,
-          account: findUserId.account,
-          isAdmin: findUserId.isAdmin,
-          newsletter: findUserId.newsletter,
-        },
-        process.env.SRV_KEY_SECRET
-      );
-      findUserId.token = token;
+      const { accessToken, refreshToken } = await createToken(findUserId);
+      findUserId.token = accessToken;
       await findUserId.save();
       res.status(200).json({ message: "profile updated" });
     }

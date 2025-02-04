@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Mailgun = require("mailgun.js");
 const fileUpload = require("express-fileupload");
+const mongoose = require("mongoose");
 
 //models
 const User = require("../../models/User");
@@ -26,29 +27,51 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
         "refreshToken in /confirmemail:",
         refreshToken
       );
-      user.token = accessToken;
+      user.token = refreshToken;
       user.emailIsConfirmed = true;
+      if (user.emailIsConfirmed !== false) {
+        await User.updateOne(
+          { code: codeInput },
+          { $unset: { expiresAt: "" } }
+        );
+      }
       await user.save();
-      //PRODUCTION
-      // res.cookie("refreshTokenV", refreshToken, {
-      //   httpOnly: false,
-      //   secure: true, // mettre à true en prod
-      //   sameSite: "lax", // mettre à strict en prod
-      //   maxAge: 2 * 24 * 60 * 60 * 1000, // 2j
-      // });
-      // res.cookie("accessTokenV", accessToken, {
-      //   httpOnly: false,
-      //   secure: true, // mettre à true en prod
-      //   sameSite: "lax", // mettre à strict en prod
-      //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7j
-      // });
       //DEVELLOPPEMENT
-      res.status(200).json({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        message:
-          "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
-      });
+      if (process.env.NODE_ENV === "developpement") {
+        console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
+        return res
+          .cookie("refreshTokenV", refreshToken, {
+            httpOnly: true,
+            path: "/",
+            domain: "localhost",
+            secure: false,
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+          })
+          .header("Authorization", accessToken)
+          .status(200)
+          .json({
+            token: accessToken,
+            message:
+              "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
+          });
+      } else {
+        return res
+          .cookie("refreshTokenV", refreshToken, {
+            httpOnly: true,
+            path: "/",
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+          })
+          .header("Authorization", accessToken)
+          .status(200)
+          .json({
+            token: accessToken,
+            message:
+              "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
+          });
+      }
     }
   } else {
     return res.status(400).json({ message: "Oups, somthing went wrong" });

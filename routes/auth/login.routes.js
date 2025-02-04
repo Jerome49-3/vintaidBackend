@@ -19,7 +19,6 @@ const User = require("../../models/User");
 const setLockAndCountLoginFailed = require("../../utils/setLockAndCountLoginFailed");
 const createToken = require("../../utils/createToken");
 const sendEmail = require("../../utils/sendEmail");
-const generateCode = require("../../utils/generateCode");
 
 router.post("/login", fileUpload(), async (req, res) => {
   console.log("je suis sur la route /login");
@@ -54,11 +53,7 @@ router.post("/login", fileUpload(), async (req, res) => {
       console.log("unlock on /login:", unlock);
 
       if (unlock) {
-        const username = user.account.username;
-        const code = generateCode(6);
-        console.log("code in /login:", code);
-        user.code = code;
-        sendEmail(user, username, email, code);
+        sendEmail(user);
         user.isLocked = false;
         user.loginFailed = 0;
         await user.save();
@@ -70,55 +65,66 @@ router.post("/login", fileUpload(), async (req, res) => {
           .json({ message: "Your account is currently locked." });
       }
     }
+    if (user.emailIsConfirmed !== false) {
+      const pwdHash = SHA256(password + user.salt).toString(encBase64);
+      if (pwdHash !== user.hash) {
+        setLockAndCountLoginFailed(user);
+        await user.save();
+        return res.status(400).json({ message: "Oops, something went wrong" });
+      }
 
-    const pwdHash = SHA256(password + user.salt).toString(encBase64);
-    if (pwdHash !== user.hash) {
-      setLockAndCountLoginFailed(user);
+      if (user.becomeAdmin) {
+        user.isAdmin = true;
+        user.becomeAdmin = false;
+        await user.save();
+      }
+
+      const { accessToken, refreshToken } = await createToken(user);
+      user.token = accessToken;
       await user.save();
-      return res.status(400).json({ message: "Oops, something went wrong" });
-    }
-
-    // Gestion des droits administrateurs
-    if (user.becomeAdmin) {
-      user.isAdmin = true;
-      user.becomeAdmin = false;
-      await user.save();
-    }
-
-    const { accessToken, refreshToken } = await createToken(user);
-    user.token = accessToken;
-    await user.save();
-    console.log(
-      "accessToken in /login:",
-      accessToken,
-      "\n",
-      "refreshToken in /login:",
-      refreshToken
-    );
-    if (process.env.NODE_ENV === "development") {
-      res.cookie("accessTokenV", accessToken, {
-        httpOnly: true,
-        path: "/",
-        domain: "localhost",
-        secure: false,
-        sameSite: "lax",
-        maxAge: 3600000, // 1 hour
+      console.log(
+        "accessToken in /login:",
+        accessToken,
+        "\n",
+        "refreshToken in /login:",
+        refreshToken
+      );
+      if (process.env.NODE_ENV === "developpement") {
+        console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
+        res
+          .cookie("refreshTokenV", refreshToken, {
+            httpOnly: true,
+            path: "/",
+            domain: "localhost",
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+          })
+          .header("Authorization", accessToken)
+          .json({ token: accessToken });
+      } else {
+        res
+          .cookie("refreshTokenV", refreshToken, {
+            httpOnly: true,
+            path: "/",
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+          })
+          .header("Authorization", accessToken)
+          .json({ token: accessToken });
+      }
+    } else {
+      sendEmail(user);
+      console.log("email envoyé on /login:");
+      return res.status(400).json({
+        message:
+          "Votre email n'est pas confirmé: un nouveau code de confirmation vient de vous être envoyé",
       });
     }
-
-    if (process.env.NODE_ENV === "production") {
-      res.cookie("accessTokenV", accessToken, {
-        httpOnly: true,
-        path: "/",
-        secure: true,
-        sameSite: "none",
-        maxAge: 3600000, // 1 hour
-      });
-    }
-    res.status(200).json("login succesfully");
   } catch (error) {
     console.log("error in catch:", error);
-    return res.status(500).json({ message: "Something went wrong." });
+    return res.status(500).json("Something went wrong.");
   }
 });
 

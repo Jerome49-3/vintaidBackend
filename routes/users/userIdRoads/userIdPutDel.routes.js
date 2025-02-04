@@ -21,7 +21,7 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
     // console.log("req.body in PUT /users/:id:", req.body);
     //faire une recherche de l'user par l'id de l'user.
     // let { pictures, username, email, isAdmin, newsletter, userId } = req.body;
-    console.log("req.files", req.files);
+    console.log("req.files in /users/:id", req.files);
 
     let pictures;
     let username;
@@ -108,16 +108,6 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
           findUserId.isAdmin = isAdmin;
         }
       }
-      const token = jwt.sign(
-        {
-          _id: findUserId.id,
-          account: findUserId.account,
-          isAdmin: findUserId.isAdmin,
-          newsletter: findUserId.newsletter,
-        },
-        process.env.SRV_KEY_SECRET
-      );
-      findUserId.token = token;
       const { accessToken, refreshToken } = await createToken(findUserId);
       findUserId.token = accessToken;
       await findUserId.save();
@@ -132,13 +122,11 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
         "refreshToken in /users/:id (PUT):",
         refreshToken
       );
-      res
-        .status(200)
-        .json({
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-          message: "profile updated",
-        });
+      res.status(200).json({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        message: "profile updated",
+      });
     }
   } catch (error) {
     console.log("error:", error);

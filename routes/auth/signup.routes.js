@@ -85,16 +85,17 @@ router.post("/signup", fileUpload(), async (req, res) => {
                     });
                     console.log("newUser in /signup:", user);
                     //verification de l'object user avant sauvegarde en BDD:
-                    const code = generateCode(6);
-                    console.log("code in /signup:", code);
-                    console.log("typeof code in /signup:", typeof code);
-                    user.code = code;
                     try {
                       const userValidation = userValid.parse(user);
                       console.log("userValidation in /signup:", userValidation);
                       if (userValid) {
-                        await user.save();
-                        sendEmail(user, username, email, code);
+                        const createdAt = Date.now() / 1000;
+                        user.createdAt = createdAt;
+                        db.users.createIndex(
+                          { createdAt: 1 },
+                          { expireAfterSeconds: 604800 }
+                        );
+                        sendEmail(user);
                         return res
                           .status(200)
                           .json(

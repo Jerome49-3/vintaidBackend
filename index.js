@@ -6,15 +6,12 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
-//************ ENVIRONMENT *****************//
-const ENVIRONMENT = process.env.NODE_ENV;
-
 //************ CONFIG CORS *****************//
 const cors = require("cors");
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "developpement") {
   app.use(
     cors({
-      origin: "https://localhost:3000",
+      origin: "http://localhost:5173",
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE"],
     })
@@ -30,6 +27,10 @@ if (process.env.NODE_ENV === "production") {
     })
   );
 }
+//************ COOKIE-PARSER *****************//
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
 
 //************ CONFIG MONGOOSE *****************//
 const mongoose = require("mongoose");
@@ -100,7 +101,9 @@ wss.on("connection", (connection, request) => {
     console.log(`Connexion WebSocket fermée pour l'offre ${offerId}`);
   });
 });
-
+// //******** CALL MIDDLEWARE RATELIMITED ********//
+// const isRateLimited = require("./middleware/isRateLimited.js");
+// app.use(isRateLimited);
 //************ CONFIG ROUTES *****************//
 //Auth
 const signupRoutes = require("./routes/auth/signup.routes");
@@ -125,12 +128,14 @@ const profilRoadGet = require("./routes/users/profileRoads/profileGet.routes.js"
 const profilRoadPut = require("./routes/users/profileRoads/profilePut.routes.js");
 //Messages
 const messagesPost = require("./routes/messages/messagesPost.routes.js");
+const refreshToken = require("./routes/auth/refresh.routes.js");
 
 //************ CALL ROUTES *****************//
 //Auth
 app.use("/user", signupRoutes);
 app.use("/user", confirmEmail);
 app.use("/user", loginRoutes);
+app.use("/user", refreshToken);
 //Offers
 app.use(offerPost);
 app.use(offerGet);
@@ -145,11 +150,12 @@ app.use(userIdGet);
 //Transactions
 app.use(transactions);
 app.use(mypurchases);
-//Messages
-app.use(messagesPost);
+
 //ProfileUSer
 app.use(profilRoadGet);
 app.use(profilRoadPut);
+//Messages
+app.use(messagesPost);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {
