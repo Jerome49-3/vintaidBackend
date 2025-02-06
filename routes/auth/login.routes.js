@@ -50,15 +50,15 @@ router.post("/login", fileUpload(), async (req, res) => {
     // Vérification si l'utilisateur est verrouillé
     if (user.isLocked) {
       const unlock = moment().isAfter(user.lockUntil);
-      console.log("unlock on /login:", unlock);
+      // console.log("unlock on /login:", unlock);
 
       if (unlock) {
         sendEmail(user);
         user.isLocked = false;
         user.loginFailed = 0;
         await user.save();
-        console.log("user.isLocked on /login:", user.isLocked);
-        console.log("user.loginFailed on /login:", user.loginFailed);
+        // console.log("user.isLocked on /login:", user.isLocked);
+        // console.log("user.loginFailed on /login:", user.loginFailed);
       } else {
         return res
           .status(403)
@@ -82,15 +82,15 @@ router.post("/login", fileUpload(), async (req, res) => {
       const { accessToken, refreshToken } = await createToken(user);
       user.token = accessToken;
       await user.save();
-      console.log(
-        "accessToken in /login:",
-        accessToken,
-        "\n",
-        "refreshToken in /login:",
-        refreshToken
-      );
+      // console.log(
+      //   "accessToken in /login:",
+      //   accessToken,
+      //   "\n",
+      //   "refreshToken in /login:",
+      //   refreshToken
+      // );
       if (process.env.NODE_ENV === "developpement") {
-        console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
+        // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
         res
           .cookie("refreshTokenV", refreshToken, {
             httpOnly: true,
@@ -123,7 +123,7 @@ router.post("/login", fileUpload(), async (req, res) => {
       });
     }
   } catch (error) {
-    console.log("error in catch:", error);
+    // console.log("error in catch:", error);
     return res.status(500).json("Something went wrong.");
   }
 });

@@ -9,6 +9,7 @@ app.use(express.json());
 //************ CONFIG CORS *****************//
 const cors = require("cors");
 if (process.env.NODE_ENV === "developpement") {
+  // console.log("process.env.NODE_ENV on index.js:", process.env.NODE_ENV);
   app.use(
     cors({
       origin: "http://localhost:5173",
@@ -16,9 +17,7 @@ if (process.env.NODE_ENV === "developpement") {
       methods: ["GET", "POST", "PUT", "DELETE"],
     })
   );
-}
-
-if (process.env.NODE_ENV === "production") {
+} else {
   app.use(
     cors({
       origin: "https://vintaid.netlify.app",
@@ -109,9 +108,11 @@ wss.on("connection", (connection, request) => {
 const signupRoutes = require("./routes/auth/signup.routes");
 const confirmEmail = require("./routes/auth/confirmEmail.routes");
 const loginRoutes = require("./routes/auth/login.routes");
+const refreshToken = require("./routes/auth/refresh.routes.js");
 //Offers
 const offerPost = require("./routes/offer/offerPost.routes");
 const offerGet = require("./routes/offer/offerGet.routes");
+const offerID = require("./routes/offer/offersID.routes.js");
 const myOffers = require("./routes/myOffers/myOffers.routes");
 //Payment
 const payment = require("./routes/payment/payment.routes");
@@ -128,7 +129,7 @@ const profilRoadGet = require("./routes/users/profileRoads/profileGet.routes.js"
 const profilRoadPut = require("./routes/users/profileRoads/profilePut.routes.js");
 //Messages
 const messagesPost = require("./routes/messages/messagesPost.routes.js");
-const refreshToken = require("./routes/auth/refresh.routes.js");
+const messagesGet = require("./routes/messages/messagesGet.routes.js");
 
 //************ CALL ROUTES *****************//
 //Auth
@@ -139,6 +140,7 @@ app.use("/user", refreshToken);
 //Offers
 app.use(offerPost);
 app.use(offerGet);
+app.use(offerID);
 app.use(myOffers);
 //Payment
 app.use(payment);
@@ -156,6 +158,7 @@ app.use(profilRoadGet);
 app.use(profilRoadPut);
 //Messages
 app.use(messagesPost);
+app.use(messagesGet);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {

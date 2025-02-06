@@ -7,18 +7,19 @@ const cloudinary = require("cloudinary").v2;
 const convertToBase64 = require("../../../utils/convertToBase64.js");
 const { message } = require("statuses");
 const jwt = require("jsonwebtoken");
+const createToken = require("../../../utils/createToken.js");
 
 //models
 const User = require("../../../models/User.js");
 
-router.put("/profile/:id", isAuthenticated, async (req, res) => {
+router.put("/profile/:id", isAuthenticated, fileUpload(), async (req, res) => {
   console.log("je suis sur la route /profile/:id (PUT)");
 
   try {
     // console.log("req.body in PUT /users/:id:", req.body);
     //faire une recherche de l'user par l'id de l'user.
     // let { pictures, username, email, isAdmin, newsletter, userId } = req.body;
-    console.log("req.files in /profile/:id (PUT):", req.files);
+    console.log("req.file in /profile/:id (PUT):", req.file);
 
     let pictures;
     let username;
@@ -92,10 +93,10 @@ router.put("/profile/:id", isAuthenticated, async (req, res) => {
           findUserId.newsletter = newsletter;
         }
       }
-      const { accessToken, refreshToken } = await createToken(findUserId);
+      const { accessToken } = await createToken(findUserId);
       findUserId.token = accessToken;
       await findUserId.save();
-      res.status(200).json({ message: "profile updated" });
+      res.status(200).json({ token: accessToken, message: "profile updated" });
     }
   } catch (error) {
     console.log("error in catch:", error);

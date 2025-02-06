@@ -19,38 +19,47 @@ router.post(
   fileUpload(),
   async (req, res) => {
     console.log("Je suis sur la route POST /messages/:OfferID");
-    let newMessagesArr = [];
-    const offerId = req.params.OfferID;
-    // console.log("offerId in /messages/:OfferID:", offerId);
-    const offer = await Offer.findById(offerId);
-    // console.log("offer:", offer);
+    console.log("req.body on POST /messages/:OfferID:", req.body);
+
+    const offerID = new mongoose.Types.ObjectId(req.params.OfferID);
+    console.log("offerID on POST /messages/:OfferID:", offerID);
+
+    let newMessagesArr = await Messages.find({ offerId: offerID });
+    console.log("newMessagesArr in /messages/:OfferID:", newMessagesArr);
+    const offer = await Offer.findOne(offerID).populate({
+      path: "owner",
+      populate: {
+        path: "account",
+      },
+    });
+    console.log("offer:", offer);
     if (!offer) {
       return res.status(404).json({ error: "Offre introuvable" });
     }
-    const findSeller = await User.findById(offer.owner).select("email");
-    // console.log("findSeller.email in /messages/:OfferID:", findSeller.email);
-    if (!findSeller) {
-      return res.status(404).json({ error: "Vendeur introuvable" });
-    }
+    const findSellerEmail = await offer.owner.email;
+    console.log("findSellerEmail in /messages/:OfferID:", findSellerEmail);
     const { newMessage } = req.body;
-    // console.log("newMessage in /messages/:OfferID:", newMessage);
+    console.log("newMessage in /messages/:OfferID:", newMessage);
     if (!newMessage) {
       return res
         .status(400)
         .json({ error: "Le contenu du message est requis" });
     }
-    const buyer = req.user;
-    // console.log("buyer in /messages/:OfferID:", buyer);
-    const date = moment().locale("fr").format("L");
-    // console.log("date in /messages/:OfferID:", date);
-    // console.log("typeof date in /messages/:OfferID:", typeof date);
+    const buyerID = req.user._id;
+    const buyer = await User.findOne({ _id: buyerID }).populate("account");
+    console.log("buyer in /messages/:OfferID:", buyer);
+    const date = await moment().locale("fr").format("L LT");
+    console.log("date in /messages/:OfferID:", date);
+    console.log("typeof date in /messages/:OfferID:", typeof date);
     const newMessages = new Messages({
       text: newMessage,
       date: date,
-      owner: buyer,
-      offer: offer,
+      offerId: offerID,
+      buyerObj: {
+        account: buyer.account,
+      },
     });
-    // console.log("newMessages:", newMessages);
+    console.log("newMessages:", newMessages);
     newMessagesArr = [...newMessagesArr, newMessages];
     console.log("newMessagesArr:", newMessagesArr);
     const savedMessage = await newMessages.save();
@@ -62,7 +71,7 @@ router.post(
     } else if (savedMessage) {
       const emailSend = await resend.emails.send({
         from: process.env.EMAIL_TO_ME,
-        to: `${findSeller.email}`,
+        to: `${findSellerEmail}`,
         subject: "you are a new message",
         html: `<strong>${newMessage}</strong>
         <br/>
@@ -72,7 +81,6 @@ router.post(
       });
     }
     // console.log("savedMessage in /messages/:OfferID:", savedMessage);
-
     res.status(200).json(newMessagesArr);
   }
 );

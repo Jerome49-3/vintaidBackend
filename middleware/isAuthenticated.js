@@ -7,28 +7,28 @@ const User = require("../models/User");
 const createToken = require("../utils/createToken");
 
 const isAuthenticated = async (req, res, next) => {
-  console.log(
-    "req?.cookies?.refreshTokenV in isAuthenticated:",
-    req?.cookies?.refreshTokenV
-  );
-  console.log(
-    "req.headers.authorization in isAuthenticated:",
-    req.headers.authorization
-  );
+  // console.log(
+  //   "req?.cookies?.refreshTokenV in isAuthenticated:",
+  //   req?.cookies?.refreshTokenV
+  // );
+  // console.log(
+  //   "req.headers.authorization in isAuthenticated:",
+  //   req.headers.authorization
+  // );
   const newAccessToken = await req?.headers?.authorization?.replace(
     "Bearer ",
     ""
   );
-  console.log("newAccessToken in isAuthenticated::", newAccessToken);
+  // console.log("newAccessToken in isAuthenticated::", newAccessToken);
   const NewRefreshToken = await req?.cookies?.refreshTokenV;
-  console.log("NewRefreshToken in isAuthenticated::", NewRefreshToken);
+  // console.log("NewRefreshToken in isAuthenticated::", NewRefreshToken);
   if (!newAccessToken && !NewRefreshToken) {
     return res.status(401).send("forbidden, no token allowed");
   }
   try {
     const decoded = jwt.verify(newAccessToken, process.env.JWT_SECRET);
-    console.log("decoded newAccessToken in isAuthenticated:", decoded);
-    req.user = decoded.user;
+    // console.log("decoded newAccessToken in isAuthenticated:", decoded);
+    req.user = decoded;
     next();
   } catch (error) {
     if (!NewRefreshToken) {
@@ -36,17 +36,11 @@ const isAuthenticated = async (req, res, next) => {
     } else {
       try {
         const decoded = jwt.verify(NewRefreshToken, process.env.JWT_SECRET);
-        console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
+        // console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
         const user = await User.findById(decoded._id);
-        console.log("user in isAuthenticated:", user);
-        const { accessToken, refreshToken } = createToken(user);
-        console.log("accessToken in isAuthenticated:", accessToken);
-        console.log("refreshToken in isAuthenticated:", refreshToken);
+        // console.log("user in isAuthenticated:", user);
+        const { accessToken, refreshToken } = await createToken(user);
         if (process.env.NODE_ENV === "developpement") {
-          console.log(
-            "process.env.NODE_ENV in isAuthenticated:",
-            process.env.NODE_ENV
-          );
           res
             .cookie("refreshTokenV", refreshToken, {
               httpOnly: true,
@@ -58,7 +52,7 @@ const isAuthenticated = async (req, res, next) => {
             })
             .header("Authorization", accessToken);
           req.user = decoded;
-          console.log(" req.user in isAuthenticated:", req.user);
+          // console.log(" req.user in isAuthenticated:", req.user);
           next();
         } else {
           res
@@ -71,9 +65,9 @@ const isAuthenticated = async (req, res, next) => {
             })
             .header("Authorization", accessToken);
           req.token = accessToken;
-          console.log(" req.token in isAuthenticated:", req.token);
+          // console.log(" req.token in isAuthenticated:", req.token);
           req.user = decoded;
-          console.log(" req.user in isAuthenticated:", req.user);
+          // console.log(" req.user in isAuthenticated:", req.user);
           next();
         }
       } catch (error) {

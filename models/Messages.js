@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { object } = require("zod");
 
 const Messages = mongoose.model("Messages", {
   text: {
@@ -9,13 +10,12 @@ const Messages = mongoose.model("Messages", {
   date: {
     type: String,
   },
-  offer: {
+  offerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Offer",
   },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+  buyerObj: {
+    type: Object,
   },
 });
 module.exports = Messages;

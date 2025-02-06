@@ -22,6 +22,7 @@ const User = require("../../models/User");
 //utils
 const sendEmail = require("../../utils/sendEmail");
 const generateCode = require("../../utils/generateCode");
+const { message } = require("statuses");
 
 router.post("/signup", fileUpload(), async (req, res) => {
   console.log("je suis sur la route /signup");
@@ -91,16 +92,13 @@ router.post("/signup", fileUpload(), async (req, res) => {
                       if (userValid) {
                         const createdAt = Date.now() / 1000;
                         user.createdAt = createdAt;
-                        db.users.createIndex(
-                          { createdAt: 1 },
-                          { expireAfterSeconds: 604800 }
-                        );
                         sendEmail(user);
                         return res
                           .status(200)
-                          .json(
-                            "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^"
-                          );
+                          .json({
+                            message:
+                              "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^",
+                          });
                       }
                     } catch (error) {
                       console.log("error:", error);
