@@ -16,8 +16,17 @@ router.post(
 
     // console.log("req:", req);
     try {
-      const { title, description, price, condition, city, brand, size, color } =
-        req.body;
+      const {
+        title,
+        description,
+        price,
+        condition,
+        city,
+        brand,
+        size,
+        color,
+        rotations,
+      } = req.body;
       // console.log(
       //   "title in /offer/publish:",
       //   title,
@@ -159,19 +168,34 @@ router.post(
         }
         console.log("newOffer._id:", newOffer._id);
         //je crée un tableau de rotations d'images vide
-        let arrRotate = [];
-        const arrRotation = JSON.parse(req.body.rotations);
-        console.log("arrRotation:", arrRotation);
-        newOffer.product_image = req.uploadOneFile;
-        newOffer.product_pictures = req.uploadMultiFile;
-        if (newOffer.product_image || newOffer.product_pictures) {
-          for (let i = 0; i < arrRotation.length; i++) {
-            const tabRotation = arrRotation[i];
-            console.log("tabRotation:", tabRotation);
-            if (Array.isArray(tabRotation)) {
-              newOffer.product_pictures.rotations = tabRotation;
-            } else {
-              newOffer.product_image.rotation = tabRotation;
+        // let arrRotate = [];
+        const arrRotation = JSON.parse(rotations);
+        console.log(
+          "arrRotation:",
+          arrRotation,
+          "\n",
+          "typeof arrRotation:",
+          typeof arrRotation
+        );
+        console.log("Array.isArray(arrRotation):", Array.isArray(arrRotation));
+
+        if (req.uploadOneFile || req.uploadMultiFile) {
+          console.log(
+            "req.uploadMultiFile in if:",
+            req.uploadMultiFile,
+            "\n",
+            "req.uploadOneFile in if:",
+            req.uploadOneFile
+          );
+          newOffer.product_image = req.uploadOneFile;
+          newOffer.product_pictures = req.uploadMultiFile;
+          if (arrRotation.length === 0) {
+            newOffer.product_image.rotation = arrRotation[0];
+          } else {
+            for (let i = 0; i < arrRotation.length; i++) {
+              const tabRotation = arrRotation[i];
+              console.log("tabRotation:", tabRotation);
+              newOffer.product_pictures.rotation = tabRotation;
             }
           }
         }
