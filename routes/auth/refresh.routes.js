@@ -41,7 +41,7 @@ router.get("/refreshToken", async (req, res) => {
             httpOnly: true,
             path: "/",
             domain: "localhost",
-            secure: false,
+            secure: true,
             sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
           })
