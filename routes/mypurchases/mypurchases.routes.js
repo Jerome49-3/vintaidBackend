@@ -17,7 +17,7 @@ router.get("/mypurchases", isAuthenticated, async (req, res) => {
   console.log("userId on /mypurchases:", userId);
   try {
     //i research all transactions of the current user;
-    const transactionsfinded = await Transactions.find({ "buyer._id": userId });
+    const transactionsfinded = await Transactions.find({ buyerId: userId });
     // for all offer who as offerSolded is true, i put them on a Array
     console.log("transactionsfinded on /mypurchases:", transactionsfinded);
     for (let i = 0; i < transactionsfinded.length; i++) {

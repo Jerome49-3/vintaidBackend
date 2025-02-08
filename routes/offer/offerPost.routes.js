@@ -180,16 +180,11 @@ router.post(
         console.log("Array.isArray(arrRotation):", Array.isArray(arrRotation));
 
         if (req.uploadOneFile || req.uploadMultiFile) {
-          console.log(
-            "req.uploadMultiFile in if:",
-            req.uploadMultiFile,
-            "\n",
-            "req.uploadOneFile in if:",
-            req.uploadOneFile
-          );
           newOffer.product_image = req.uploadOneFile;
           newOffer.product_pictures = req.uploadMultiFile;
-          if (arrRotation.length === 0) {
+          console.log("arrRotation.length:", arrRotation.length);
+          if (arrRotation.length === 1) {
+            console.log("arrRotation[0]:", arrRotation[0]);
             newOffer.product_image.rotation = arrRotation[0];
           } else {
             for (let i = 0; i < arrRotation.length; i++) {

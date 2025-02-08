@@ -58,8 +58,8 @@ router.post(
           buyer: {
             email: acheteur.email,
             account: acheteur.account,
-            _id: acheteur._id,
           },
+          buyerId: acheteur._id,
           buyer_address: buyerAdress,
           product_id: offers._id,
           date: date,

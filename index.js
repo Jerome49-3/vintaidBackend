@@ -120,6 +120,7 @@ const confirmPayment = require("./routes/payment/confirmPayment.routes");
 //Transactions
 const transactions = require("./routes/transactions/transactions.routes");
 const mypurchases = require("./routes/mypurchases/mypurchases.routes");
+const transactionsId = require("./routes/transactions/transactionsId.routes.js");
 //Users
 const users = require("./routes/users/users");
 const userIdGet = require("./routes/users/userIdRoads/userIdGet.routes.js");
@@ -152,6 +153,7 @@ app.use(userIdGet);
 //Transactions
 app.use(transactions);
 app.use(mypurchases);
+app.use(transactionsId);
 
 //ProfileUSer
 app.use(profilRoadGet);

@@ -13,7 +13,7 @@ router.get("/users", isAuthenticated, async (req, res) => {
   console.log("date in /users:", date);
   try {
     const users = await User.find();
-    // console.log("users in /users:", users);
+    console.log("users in /users:", users);
     let lastUsers = [];
     for (let i = 0; i < users.length; i++) {
       const el = users[i];

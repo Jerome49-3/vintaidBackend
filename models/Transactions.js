@@ -17,6 +17,10 @@ const Transactions = mongoose.model("Transactions", {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Offer",
   },
+  buyerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   buyer_address: Object,
   date: {
     type: String,
