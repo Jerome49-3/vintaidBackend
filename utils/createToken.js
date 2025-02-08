@@ -5,11 +5,15 @@ const createToken = async (user) => {
 
   const accessToken = jwt.sign(
     {
-      _id: user._id,
+      email: user.email,
       account: user.account,
-      isAdmin: user.isAdmin,
       newsletter: user.newsletter,
+      isAdmin: user.isAdmin,
+      loginFailed: user.loginFailed,
       isLocked: user.isLocked,
+      createdAt: user.createdAt,
+      expiresAt: user.expiresAt,
+      _id: user._id,
     },
     process.env.JWT_SECRET,
     { expiresIn: "30m" }
