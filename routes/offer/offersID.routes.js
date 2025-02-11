@@ -30,6 +30,7 @@ router.get("/offers/:id", async (req, res) => {
           product_description: offer.product_description,
           product_price: offer.product_price,
           product_details: offer.product_details,
+          offer_solded: offer.offer_solded,
           product_image: offer.product_image,
           product_pictures: offer.product_pictures,
           product_id: offer._id,

@@ -9,7 +9,7 @@ app.use(express.json());
 //************ CONFIG CORS *****************//
 const cors = require("cors");
 if (process.env.NODE_ENV === "developpement") {
-  // console.log("process.env.NODE_ENV on index.js:", process.env.NODE_ENV);
+  console.log("process.env.NODE_ENV on index.js:", process.env.NODE_ENV);
   app.use(
     cors({
       origin: "http://localhost:5173",
@@ -105,24 +105,25 @@ wss.on("connection", (connection, request) => {
 // app.use(isRateLimited);
 //************ CONFIG ROUTES *****************//
 //Auth
-const signupRoutes = require("./routes/auth/signup.routes");
-const confirmEmail = require("./routes/auth/confirmEmail.routes");
-const loginRoutes = require("./routes/auth/login.routes");
+const signupRoutes = require("./routes/auth/signup.routes.js");
+const confirmEmail = require("./routes/auth/confirmEmail.routes.js");
+const loginRoutes = require("./routes/auth/login.routes.js");
 const refreshToken = require("./routes/auth/refresh.routes.js");
+const logOut = require("./routes/auth/logOut.routes.js");
 //Offers
-const offerPost = require("./routes/offer/offerPost.routes");
-const offerGet = require("./routes/offer/offerGet.routes");
+const offerPost = require("./routes/offer/offerPost.routes.js");
+const offerGet = require("./routes/offer/offerGet.routes.js");
 const offerID = require("./routes/offer/offersID.routes.js");
 const myOffers = require("./routes/myOffers/myOffers.routes");
 //Payment
-const payment = require("./routes/payment/payment.routes");
-const confirmPayment = require("./routes/payment/confirmPayment.routes");
+const payment = require("./routes/payment/payment.routes.js");
+const confirmPayment = require("./routes/payment/confirmPayment.routes.js");
 //Transactions
-const transactions = require("./routes/transactions/transactions.routes");
-const mypurchases = require("./routes/mypurchases/mypurchases.routes");
+const transactions = require("./routes/transactions/transactions.routes.js");
+const mypurchases = require("./routes/mypurchases/mypurchases.routes.js");
 const transactionsId = require("./routes/transactions/transactionsId.routes.js");
 //Users
-const users = require("./routes/users/users");
+const users = require("./routes/users/users.routes.js");
 const userIdGet = require("./routes/users/userIdRoads/userIdGet.routes.js");
 const userPutDel = require("./routes/users/userIdRoads/userIdPutDel.routes.js");
 //Profile
@@ -138,6 +139,7 @@ app.use("/user", signupRoutes);
 app.use("/user", confirmEmail);
 app.use("/user", loginRoutes);
 app.use("/user", refreshToken);
+app.use("/user", logOut);
 //Offers
 app.use(offerPost);
 app.use(offerGet);

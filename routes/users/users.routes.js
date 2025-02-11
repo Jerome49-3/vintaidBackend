@@ -4,7 +4,7 @@ const isAuthenticated = require("../../middleware/isAuthenticated.js");
 const moment = require("moment/moment.js");
 
 //models
-const User = require("../../models/User");
+const User = require("../../models/User.js");
 
 router.get("/users", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route /users ");
