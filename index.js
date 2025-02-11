@@ -125,10 +125,12 @@ const transactionsId = require("./routes/transactions/transactionsId.routes.js")
 //Users
 const users = require("./routes/users/users.routes.js");
 const userIdGet = require("./routes/users/userIdRoads/userIdGet.routes.js");
-const userPutDel = require("./routes/users/userIdRoads/userIdPutDel.routes.js");
+const userIdPut = require("./routes/users/userIdRoads/userIdPut.routes.js");
+const userIdDel = require("./routes/users/userIdRoads/userIdDel.routes.js");
 //Profile
-const profilRoadGet = require("./routes/users/profileRoads/profileGet.routes.js");
-const profilRoadPut = require("./routes/users/profileRoads/profilePut.routes.js");
+const profilGet = require("./routes/profile/profileGet.routes.js");
+const profilPut = require("./routes/profile/profilePut.routes.js");
+const profilDel = require("./routes/profile/profileDel.routes.js");
 //Messages
 const messagesPost = require("./routes/messages/messagesPost.routes.js");
 const messagesGet = require("./routes/messages/messagesGet.routes.js");
@@ -150,7 +152,8 @@ app.use(payment);
 app.use(confirmPayment);
 //Users
 app.use(users);
-app.use(userPutDel);
+app.use(userIdPut);
+app.use(userIdDel);
 app.use(userIdGet);
 //Transactions
 app.use(transactions);
@@ -158,8 +161,9 @@ app.use(mypurchases);
 app.use(transactionsId);
 
 //ProfileUSer
-app.use(profilRoadGet);
-app.use(profilRoadPut);
+app.use(profilGet);
+app.use(profilPut);
+app.use(profilDel);
 //Messages
 app.use(messagesPost);
 app.use(messagesGet);

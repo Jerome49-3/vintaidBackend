@@ -21,7 +21,7 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
     // console.log("req.body in PUT /users/:id:", req.body);
     //faire une recherche de l'user par l'id de l'user.
     // let { pictures, username, email, isAdmin, newsletter, userId } = req.body;
-    console.log("req.files in /users/:id", req.files);
+    console.log("req.files in /users/:id (PUT)", req.files);
 
     let pictures;
     let username;
@@ -108,48 +108,18 @@ router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
           findUserId.isAdmin = isAdmin;
         }
       }
-      const { accessToken, refreshToken } = await createToken(findUserId);
+      const { accessToken } = await createToken(findUserId);
       findUserId.token = accessToken;
       await findUserId.save();
+      console.log("accessToken in /users/:id (PUT):", accessToken);
       res.status(200).json({
-        message:
-          "Merci votre email est bien confirmé, vous aller être redirigé vers la route /publish",
-      });
-      console.log(
-        "accessToken in /users/:id (PUT):",
-        accessToken,
-        "\n",
-        "refreshToken in /users/:id (PUT):",
-        refreshToken
-      );
-      res.status(200).json({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+        token: accessToken,
         message: "profile updated",
       });
     }
   } catch (error) {
     console.log("error:", error);
   }
-});
-
-router.delete("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
-  console.log("je suis sur la route in /users/:id (DELETE):");
-  const id = req.params.id;
-  console.log("id in /users/:id (DELETE)::", id);
-  const findUserByID = await User.findById(id);
-  console.log("findUserByID in /users/:id (DELETE)::", findUserByID);
-  try {
-    if (mongoose.Types.ObjectId.isValid(findUserByID)) {
-      await User.findByIdAndDelete(id);
-    } else {
-      res.status(400).json({ message: "Bad request" });
-    }
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: error.message });
-  }
-  res.status(200).json({ message: "user deleted" });
 });
 
 module.exports = router;

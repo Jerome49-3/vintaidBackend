@@ -4,6 +4,7 @@ const router = express.Router();
 const isAuthenticated = require("../../../middleware/isAuthenticated.js");
 //models
 const User = require("../../../models/User.js");
+const createToken = require("../../../utils/createToken.js");
 
 router.get("/users/:id", isAuthenticated, async (req, res) => {
   // console.log("req.user:", req.user);
@@ -12,15 +13,11 @@ router.get("/users/:id", isAuthenticated, async (req, res) => {
   if (userId !== undefined) {
     try {
       const user = await User.findById(userId);
-      console.log("user in /users:id:", user);
+      console.log("user in /users:id (GET):", user);
+      const { accessToken } = await createToken(user);
+      console.log("accessToken in /users:id (GET):", accessToken);
       res.status(200).json({
-        username: user.account.username,
-        avatar: user.account.avatar,
-        email: user.email,
-        newsletter: user.newsletter,
-        date: user.date,
-        isAdmin: user.isAdmin,
-        id: user._id,
+        token: accessToken,
       });
     } catch (error) {
       console.log("error in catch:", error);
