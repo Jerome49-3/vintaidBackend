@@ -124,9 +124,9 @@ const mypurchases = require("./routes/mypurchases/mypurchases.routes.js");
 const transactionsId = require("./routes/transactions/transactionsId.routes.js");
 //Users
 const users = require("./routes/users/users.routes.js");
-const userIdGet = require("./routes/users/userIdRoads/userIdGet.routes.js");
-const userIdPut = require("./routes/users/userIdRoads/userIdPut.routes.js");
-const userIdDel = require("./routes/users/userIdRoads/userIdDel.routes.js");
+const userIdGet = require("./routes/users/userIdGet.routes.js");
+const userIdPut = require("./routes/users/userIdPut.routes.js");
+const userIdDel = require("./routes/users/userIdDel.routes.js");
 //Profile
 const profilGet = require("./routes/profile/profileGet.routes.js");
 const profilPut = require("./routes/profile/profilePut.routes.js");
@@ -134,6 +134,8 @@ const profilDel = require("./routes/profile/profileDel.routes.js");
 //Messages
 const messagesPost = require("./routes/messages/messagesPost.routes.js");
 const messagesGet = require("./routes/messages/messagesGet.routes.js");
+//mails
+const sendCode = require("./routes/emails/sendCode.routes.js");
 
 //************ CALL ROUTES *****************//
 //Auth
@@ -152,9 +154,9 @@ app.use(payment);
 app.use(confirmPayment);
 //Users
 app.use(users);
+app.use(userIdGet);
 app.use(userIdPut);
 app.use(userIdDel);
-app.use(userIdGet);
 //Transactions
 app.use(transactions);
 app.use(mypurchases);
@@ -167,6 +169,8 @@ app.use(profilDel);
 //Messages
 app.use(messagesPost);
 app.use(messagesGet);
+//mails
+app.use("/sendMail", sendCode);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {
