@@ -15,8 +15,7 @@ router.post("/sendCode/:id", async (req, res) => {
     console.log("id on /sendEmailCode/:id:", id);
     const user = await User.findById(id);
     if (user) {
-      sendEmail(user);
-      console.log("emailSend in /sendCode/:id:", emailSend);
+      await sendEmail(user);
       res
         .status(200)
         .json({ message: "le code a bien été renvoyé à l'utilisateur" });

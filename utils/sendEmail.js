@@ -1,6 +1,8 @@
 const { Resend } = require("resend");
 // console.log("resend:", Resend);
 const resend = new Resend(process.env.RESEND_API_KEY);
+// console.log("resend on sendMail:", resend);
+
 const generateCode = require("./generateCode");
 
 const sendEmail = async (user) => {
@@ -18,7 +20,7 @@ const sendEmail = async (user) => {
     const subject = "Welcome to Vintaid, my replica of Vinted";
     const message = `Welcome ${username}, Here your code: ${code}, copy him and tape it at input for verifying your email, please`;
     const messageHtml = `
-        <p>Welcome ${username},</p>
+        <p style={{backgroundColor: "#2DB0BA", width: "100%", padding: "20px"}}>Welcome ${username},</p>
         <p>Here your code: ${code}, copy him and tape it at input for verifying your email, please</p>
         <br>
         <p>Best regards,</p>
