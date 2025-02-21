@@ -3,9 +3,9 @@ const router = express.Router();
 const { SHA256 } = require("crypto-js");
 const encBase64 = require("crypto-js/enc-base64");
 const fileUpload = require("express-fileupload");
-const CryptoJS = require("crypto-js");
-const { message } = require("statuses");
-const jwt = require("jsonwebtoken");
+// const CryptoJS = require("crypto-js");
+// const { message } = require("statuses");
+// const jwt = require("jsonwebtoken");
 
 //moment.js
 const moment = require("moment/moment.js");
@@ -116,7 +116,7 @@ router.post("/login", fileUpload(), async (req, res) => {
       }
     } else {
       sendEmail(user);
-      console.log("email envoyé on /login:");
+      await user.save();
       return res.status(400).json({
         message:
           "Votre email n'est pas confirmé: un nouveau code de confirmation vient de vous être envoyé",
@@ -124,7 +124,7 @@ router.post("/login", fileUpload(), async (req, res) => {
     }
   } catch (error) {
     // console.log("error in catch:", error);
-    return res.status(500).json("Something went wrong.");
+    return res.status(500).json("Something went wrong");
   }
 });
 

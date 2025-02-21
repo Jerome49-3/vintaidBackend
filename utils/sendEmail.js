@@ -11,7 +11,6 @@ const sendEmail = async (user) => {
   const email = user.email;
   const code = generateCode(6);
   user.code = code;
-  await user.save();
   console.log("code on sendMail:", code);
   console.log("username on sendMail:", username);
   console.log("email on sendMail:", email);
@@ -21,7 +20,7 @@ const sendEmail = async (user) => {
     const message = `Welcome ${username}, Here your code: ${code}, copy him and tape it at input for verifying your email, please`;
     const messageHtml = `
         <p style={{backgroundColor: "#2DB0BA", width: "100%", padding: "20px"}}>Welcome ${username},</p>
-        <p>Here your code: ${code}, copy him and tape it at input for verifying your email, please</p>
+        <p>Here's your code: ${code}, please copy and paste it into the entry to check your email.</p>
         <br>
         <p>Best regards,</p>
         <strong>${admin}</strong>`;

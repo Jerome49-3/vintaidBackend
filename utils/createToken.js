@@ -15,7 +15,7 @@ const createToken = async (user) => {
       loginFailed: user.loginFailed,
       isLocked: user.isLocked,
       createdAt: user.createdAt,
-      expiresAt: user.expiresAt,
+      // expiresAt: user.expiresAt,
       _id: user._id,
     },
     process.env.JWT_SECRET,

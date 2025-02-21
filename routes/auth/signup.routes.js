@@ -90,15 +90,12 @@ router.post("/signup", fileUpload(), async (req, res) => {
                       const userValidation = userValid.parse(user);
                       console.log("userValidation in /signup:", userValidation);
                       if (userValid) {
-                        const createdAt = Date.now() / 1000;
-                        user.createdAt = createdAt;
-                        sendEmail(user);
-                        return res
-                          .status(200)
-                          .json({
-                            message:
-                              "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^",
-                          });
+                        await sendEmail(user);
+                        await user.save();
+                        return res.status(200).json({
+                          message:
+                            "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^",
+                        });
                       }
                     } catch (error) {
                       console.log("error:", error);

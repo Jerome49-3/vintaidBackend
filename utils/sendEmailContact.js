@@ -2,10 +2,17 @@ const { Resend } = require("resend");
 // console.log("resend:", Resend);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const sendEmail = async (username, email, messageContact, subject) => {
+const sendEmail = async (
+  username,
+  email,
+  messageContact,
+  subject,
+  destinataire
+) => {
   console.log("user on sendMail:", user);
   console.log("code on sendMail:", code);
   console.log("username on sendMail:", username);
+  console.log("destinataire on sendMail:", destinataire);
   console.log("email on sendMail:", email);
   try {
     const admin = `Vintaid team`;

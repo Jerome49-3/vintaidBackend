@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Mailgun = require("mailgun.js");
 const fileUpload = require("express-fileupload");
-const mongoose = require("mongoose");
 
 //models
 const User = require("../../models/User");
@@ -15,8 +13,9 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
   const { code } = req.body;
   const codeInput = JSON.parse(code).join("");
   if (codeInput) {
-    const user = await User.findOne({ code: codeInput });
     console.log("codeInput in /confirmemail:", codeInput);
+    const user = await User.findOne({ code: codeInput });
+    console.log("user in /confirmemail:", user);
     if (user) {
       console.log("user in /confirmemail:", user);
       const { accessToken, refreshToken } = await createToken(user);
@@ -30,10 +29,7 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       user.token = refreshToken;
       user.emailIsConfirmed = true;
       if (user.emailIsConfirmed !== false) {
-        await User.updateOne(
-          { code: codeInput },
-          { $unset: { expiresAt: "" } }
-        );
+        await User.updateOne({ code: codeInput }, { $unset: { expireAt: "" } });
       }
       await user.save();
       //DEVELLOPPEMENT
