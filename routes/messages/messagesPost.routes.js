@@ -19,27 +19,27 @@ router.post(
   fileUpload(),
   async (req, res) => {
     console.log("Je suis sur la route POST /messages/:OfferID");
-    console.log("req.body on POST /messages/:OfferID:", req.body);
+    // console.log("req.body on POST /messages/:OfferID:", req.body);
 
     const offerID = new mongoose.Types.ObjectId(req.params.OfferID);
-    console.log("offerID on POST /messages/:OfferID:", offerID);
+    // console.log("offerID on POST /messages/:OfferID:", offerID);
 
     let newMessagesArr = await Messages.find({ offerId: offerID });
-    console.log("newMessagesArr in /messages/:OfferID:", newMessagesArr);
+    // console.log("newMessagesArr in /messages/:OfferID:", newMessagesArr);
     const offer = await Offer.findOne(offerID).populate({
       path: "owner",
       populate: {
         path: "account",
       },
     });
-    console.log("offer:", offer);
+    // console.log("offer:", offer);
     if (!offer) {
       return res.status(404).json({ error: "Offre introuvable" });
     }
     const findSellerEmail = await offer.owner.email;
-    console.log("findSellerEmail in /messages/:OfferID:", findSellerEmail);
+    // console.log("findSellerEmail in /messages/:OfferID:", findSellerEmail);
     const { newMessage } = req.body;
-    console.log("newMessage in /messages/:OfferID:", newMessage);
+    // console.log("newMessage in /messages/:OfferID:", newMessage);
     if (!newMessage) {
       return res
         .status(400)
@@ -47,10 +47,10 @@ router.post(
     }
     const buyerID = req.user._id;
     const buyer = await User.findOne({ _id: buyerID }).populate("account");
-    console.log("buyer in /messages/:OfferID:", buyer);
+    // console.log("buyer in /messages/:OfferID:", buyer);
     const date = await moment().locale("fr").format("L LT");
-    console.log("date in /messages/:OfferID:", date);
-    console.log("typeof date in /messages/:OfferID:", typeof date);
+    // console.log("date in /messages/:OfferID:", date);
+    // console.log("typeof date in /messages/:OfferID:", typeof date);
     const newMessages = new Messages({
       text: newMessage,
       date: date,
@@ -59,11 +59,11 @@ router.post(
         account: buyer.account,
       },
     });
-    console.log("newMessages:", newMessages);
+    // console.log("newMessages:", newMessages);
     newMessagesArr = [...newMessagesArr, newMessages];
-    console.log("newMessagesArr:", newMessagesArr);
+    // console.log("newMessagesArr:", newMessagesArr);
     const savedMessage = await newMessages.save();
-    console.log("savedMessage:", savedMessage);
+    // console.log("savedMessage:", savedMessage);
     if (!savedMessage) {
       return res
         .status(500)

@@ -16,13 +16,13 @@ const Messages = require("../../models/Messages.js");
 router.get("/messages/:OfferID", isAuthenticated, async (req, res) => {
   console.log("Je suis sur la route GET /messages/:OfferID");
   const OfferID = req.params.OfferID;
-  console.log("OfferID in /messages/:OfferID:", OfferID);
-  console.log(
-    "mongoose.Types.ObjectId.isValid(id):",
-    mongoose.Types.ObjectId.isValid(OfferID)
-  );
+  // console.log("OfferID in /messages/:OfferID:", OfferID);
+  // console.log(
+  //   "mongoose.Types.ObjectId.isValid(id):",
+  //   mongoose.Types.ObjectId.isValid(OfferID)
+  // );
   const messagesGet = await Messages.find({ offerId: OfferID });
-  console.log("messagesGet in /messages/:OfferID:", messagesGet);
+  // console.log("messagesGet in /messages/:OfferID:", messagesGet);
   return res.status(200).json(messagesGet);
 });
 

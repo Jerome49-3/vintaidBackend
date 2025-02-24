@@ -27,10 +27,11 @@ if (process.env.NODE_ENV === "developpement") {
   );
 }
 //************ COOKIE-PARSER *****************//
-
+// a verifier si encore utiliser > car remplacer par jwt si not use > remove lib and import
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
-
+//************ COOKIE *****************//
+const cookie = require("cookie");
 //************ CONFIG MONGOOSE *****************//
 const mongoose = require("mongoose");
 mongoose.connect(process.env.MONGODB_URI);
@@ -46,7 +47,14 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
-
+//************ JWT *****************//
+const jwt = require("jsonwebtoken");
+//************ MODELS *****************//
+const Offer = require("./models/Offer.js");
+const User = require("./models/User.js");
+//************ MODELS *****************//
+const checkToken = require("./utils/checkToken.js");
+const errorCheckToken = require("./utils/errorCheckToken.js");
 //************ CONFIG WEBSOCKET *****************//
 const WebSocket = require("ws");
 const http = require("http");
@@ -69,16 +77,19 @@ server.on("upgrade", (request, socket, head) => {
     socket.destroy();
   }
 });
-
+const clients = {};
+let cookObj = {};
 wss.on("connection", (connection, request) => {
-  // console.log("${request.headers.host}:", `${request.headers.host}`);
-
   const pathname = new URL(request.url, `http://${request.headers.host}`)
     .pathname;
   // console.log("pathname:", pathname);
 
   const offerId = pathname.split("/")[2]; // Récupère l'ID de l'offre
   console.log(`Nouvelle connexion WebSocket pour l'offre ${offerId}`);
+
+  if (offerId) {
+    // const recipientId = offer.owner;
+  }
 
   connection.on("message", (message) => {
     try {
@@ -87,6 +98,8 @@ wss.on("connection", (connection, request) => {
 
       // Répercuter le message à tous les clients connectés à cette offre
       wss.clients.forEach((client) => {
+        // console.log("wss.clients:", wss.clients);
+        // console.log("client:", client);
         if (client !== connection && client.readyState === WebSocket.OPEN) {
           client.send(JSON.stringify({ offerId, ...parsedMessage }));
         }
@@ -108,6 +121,7 @@ wss.on("connection", (connection, request) => {
 const signupRoutes = require("./routes/auth/signup.routes.js");
 const confirmEmail = require("./routes/auth/confirmEmail.routes.js");
 const loginRoutes = require("./routes/auth/login.routes.js");
+const verifToken = require("./routes/auth/verifyToken.routes.js");
 const refreshToken = require("./routes/auth/refresh.routes.js");
 const logOut = require("./routes/auth/logOut.routes.js");
 //Offers
@@ -142,6 +156,7 @@ const sendCode = require("./routes/emails/sendCode.routes.js");
 app.use("/user", signupRoutes);
 app.use("/user", confirmEmail);
 app.use("/user", loginRoutes);
+app.use("/user", verifToken);
 app.use("/user", refreshToken);
 app.use("/user", logOut);
 //Offers

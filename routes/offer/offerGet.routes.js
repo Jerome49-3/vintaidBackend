@@ -9,19 +9,19 @@ const User = require("../../models/User");
 router.get("/offers", async (req, res) => {
   console.log("je suis sur la route /offers");
   let { title, priceMin, priceMax, sort, page } = req.query;
-  console.log(
-    "req.query.title:",
-    req.query.title,
-    "\n",
-    "req.query.priceMin:",
-    req.query.priceMin,
-    "\n",
-    "req.query.priceMax:",
-    req.query.priceMax,
-    "\n",
-    "req.query.sort:",
-    req.query.sort
-  );
+  // console.log(
+  //   "req.query.title:",
+  //   req.query.title,
+  //   "\n",
+  //   "req.query.priceMin:",
+  //   req.query.priceMin,
+  //   "\n",
+  //   "req.query.priceMax:",
+  //   req.query.priceMax,
+  //   "\n",
+  //   "req.query.sort:",
+  //   req.query.sort
+  // );
   let ownerFind;
   let filter = {};
   let select = "";
@@ -57,20 +57,20 @@ router.get("/offers", async (req, res) => {
           ...filter.product_price,
           $gte: priceMin,
         };
-        console.log("filter.product_price priceMin:", filter.product_price);
+        // console.log("filter.product_price priceMin:", filter.product_price);
       }
       if (priceMax !== undefined) {
         filter.product_price = {
           ...filter.product_price,
           $lte: priceMax,
         };
-        console.log(
-          "filter.product_price priceMax:",
-          filter.product_price,
-          "\n",
-          "typeof priceMax:",
-          typeof priceMax
-        );
+        // console.log(
+        //   "filter.product_price priceMax:",
+        //   filter.product_price,
+        //   "\n",
+        //   "typeof priceMax:",
+        //   typeof priceMax
+        // );
       }
       if (sort === "price-desc") {
         filterSort.product_price = -1;
@@ -144,7 +144,7 @@ router.get("/offers", async (req, res) => {
       return res.status(200).json(offers);
     }
   } catch (error) {
-    console.log("error:", error, "\n", "error.message:", error.message);
+    // console.log("error:", error, "\n", "error.message:", error.message);
     return res.status(500).json({ error: error.message });
   }
 });
