@@ -8,7 +8,7 @@ const Offer = require("../../models/Offer.js");
 const User = require("../../models/User.js");
 
 router.get("/myOffers", isAuthenticated, async (req, res) => {
-  console.log("je suis sur la route /mysales");
+  console.log("je suis sur la route /myOffers");
   const user = req.user;
   console.log("user on /myOffers:", user);
   const userOffers = await Offer.find({ owner: user });

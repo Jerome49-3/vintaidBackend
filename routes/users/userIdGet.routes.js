@@ -6,11 +6,15 @@ const isAuthenticated = require("../../middleware/isAuthenticated.js");
 const User = require("../../models/User.js");
 const createToken = require("../../utils/createToken.js");
 
-router.get("/users/:id", isAuthenticated, async (req, res) => {
+router.get("/userId/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route in /users/:id (GET):");
   // console.log("req.user:", req.user);
   const userId = req.params.id;
-  // console.log("userId:", userId);
+  console.log("userId:", userId);
+  console.log(
+    "mongoose.Types.ObjectId.isValid(id):",
+    mongoose.Types.ObjectId.isValid(userId)
+  );
   if (userId !== undefined) {
     try {
       const user = await User.findById(userId).select(

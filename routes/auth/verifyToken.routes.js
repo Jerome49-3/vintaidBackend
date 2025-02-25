@@ -11,7 +11,7 @@ const errorCheckToken = require("../../utils/errorCheckToken.js");
 const User = require("../../models/User.js");
 
 router.post("/verifyToken", async (req, res) => {
-  console.log("je suis sur la route /verifyToken (POST)");
+  // console.log("je suis sur la route /verifyToken (POST)");
   // console.log("req?.headers?.authorization:", req?.headers?.authorization);
   // console.log("req?.headers:", req?.headers);
   // console.log("req?.cookies?.accessTokenV:", req?.cookies?.accessTokenV);
@@ -26,7 +26,7 @@ router.post("/verifyToken", async (req, res) => {
   try {
     if (bearerToken) {
       const decoded = jwt.verify(bearerToken, process.env.JWT_SECRET);
-      console.log("decoded in /verifyToken:", decoded);
+      // console.log("decoded in /verifyToken:", decoded);
       const user = await User.findById(decoded._id);
       // console.log("user in /verifyToken:", user);
 
@@ -35,7 +35,7 @@ router.post("/verifyToken", async (req, res) => {
       }
     } else {
       const decoded = jwt.verify(cookieAccessToken, process.env.JWT_SECRET);
-      console.log("decoded in /verifyToken:", decoded);
+      // console.log("decoded in /verifyToken:", decoded);
       const user = await User.findById(decoded._id);
       if (user) {
         res.status(202).json({ message: "Your token is valid" });

@@ -16,7 +16,13 @@ router.post(
   fileUpload(),
   async (req, res) => {
     console.log("je suis sur la route on /confirmPayment:");
-    const { offer_solded, product_id, product_price, buyer_address } = req.body;
+    const {
+      offer_solded,
+      product_id,
+      product_price,
+      buyer_address,
+      numberOfCommand,
+    } = req.body;
     console.log(
       "offer_solded on /confirmPayment:",
       offer_solded,
@@ -28,7 +34,10 @@ router.post(
       product_price,
       "\n",
       "buyer_address on /confirmPayment:",
-      buyer_address
+      buyer_address,
+      "\n",
+      "numberOfCommand on /confirmPayment:",
+      numberOfCommand
     );
     const offers = await Offer.findById(product_id);
     // console.log("offers in /payment:", offers);

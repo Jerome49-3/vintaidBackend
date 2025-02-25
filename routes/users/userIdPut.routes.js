@@ -14,7 +14,7 @@ const User = require("../../models/User.js");
 //utils
 const createToken = require("../../utils/createToken.js");
 
-router.put("/users/:id", isAuthenticated, fileUpload(), async (req, res) => {
+router.put("/userId/:id", isAuthenticated, fileUpload(), async (req, res) => {
   // console.log("je suis sur la route /users/:id (PUT):");
 
   try {

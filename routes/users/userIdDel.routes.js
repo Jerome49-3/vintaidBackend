@@ -7,7 +7,7 @@ const isAuthenticated = require("../../middleware/isAuthenticated.js");
 const User = require("../../models/User.js");
 const Offer = require("../../models/Offer.js");
 
-router.delete("/users/:id", isAuthenticated, async (req, res) => {
+router.delete("/userId/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route in /users/:id (DELETE):");
   const id = req.params.id;
   console.log("id in /users/:id (DELETE):", id);
