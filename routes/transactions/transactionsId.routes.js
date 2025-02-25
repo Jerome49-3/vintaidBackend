@@ -5,8 +5,8 @@ const isAuthenticated = require("../../middleware/isAuthenticated.js");
 //models
 const Transactions = require("../../models/Transactions.js");
 
-router.get("/transactions/:id", isAuthenticated, async (req, res) => {
-  console.log("je suis sur la route /transactions/:id");
+router.get("/transactionId/:id", isAuthenticated, async (req, res) => {
+  console.log("je suis sur la route /transactionId/:id");
   const transId = req.params.id;
   console.log("transId in /transactions/:id (GET):", transId);
   const transactions = await Transactions.findById({ _id: transId });

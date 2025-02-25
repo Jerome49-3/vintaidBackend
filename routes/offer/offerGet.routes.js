@@ -52,7 +52,7 @@ router.get("/offers", async (req, res) => {
         // console.log("filter.product_name:", filter.product_name);
       }
       if (priceMin !== undefined) {
-        console.log("typeof priceMin:", typeof priceMin);
+        // console.log("typeof priceMin:", typeof priceMin);
         filter.product_price = {
           ...filter.product_price,
           $gte: priceMin,
