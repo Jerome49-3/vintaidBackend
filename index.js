@@ -150,6 +150,7 @@ const messagesPost = require("./routes/messages/messagesPost.routes.js");
 const messagesGet = require("./routes/messages/messagesGet.routes.js");
 //mails
 const sendCode = require("./routes/emails/sendCode.routes.js");
+const contact = require("./routes/emails/contact.routes");
 
 //************ CALL ROUTES *****************//
 //Auth
@@ -186,6 +187,7 @@ app.use(messagesPost);
 app.use(messagesGet);
 //mails
 app.use("/sendMail", sendCode);
+app.use("/sendMail", contact);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {

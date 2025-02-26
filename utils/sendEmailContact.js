@@ -2,33 +2,26 @@ const { Resend } = require("resend");
 // console.log("resend:", Resend);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const sendEmail = async (
-  username,
-  email,
-  messageContact,
-  subject,
-  destinataire
-) => {
-  console.log("user on sendMail:", user);
-  console.log("code on sendMail:", code);
+const sendEmail = async (username, email, subject, messageContact) => {
   console.log("username on sendMail:", username);
-  console.log("destinataire on sendMail:", destinataire);
   console.log("email on sendMail:", email);
   try {
     const admin = `Vintaid team`;
-    const subject = "Welcome to Vintaid, my replica of Vinted";
-    const message = `Welcome ${username}, ${messageContact}, ${admin}`;
+    const sujet = `${subject}`;
+    const message = `Welcome ${admin}, ${messageContact}, ${username}, ${email}`;
     const messageHtml = `
-        <p>Welcome ${username}</p>
+        <p>Welcome ${admin}</p>
         <br>
         <p>${messageContact}</p>
         <br>
         <p>Best regards,</p>
-        <strong>${admin}</strong>`;
+        <strong>${username}</strong>
+        <p>${email}<p/>`;
     const emailSend = await resend.emails.send({
-      from: `${username} <${email}>`,
+      from: `${username} <${process.env.EMAIL_TO_ME}>`,
       to: process.env.EMAIL_TO_ME,
-      subject: subject,
+      subject: sujet,
+      replyTo: `${email}`,
       text: message,
       html: messageHtml,
     });
