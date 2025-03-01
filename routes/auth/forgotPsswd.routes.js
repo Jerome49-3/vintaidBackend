@@ -60,9 +60,31 @@ router.post("/forgotPsswd", fileUpload(), async (req, res) => {
           "refreshToken in /forgotPsswd:",
           refreshToken
         );
-        res
-          .status(201)
-          .json({ token: accessToken, success: "password updated" });
+        if (process.env.NODE_ENV === "developpement") {
+          // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
+          res
+            .cookie("refreshTokenV", refreshToken, {
+              httpOnly: true,
+              path: "/",
+              domain: "localhost",
+              secure: true,
+              sameSite: "none",
+              maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+            })
+            .header("Authorization", accessToken)
+            .json({ token: accessToken, success: "password updated" });
+        } else {
+          res
+            .cookie("refreshTokenV", refreshToken, {
+              httpOnly: true,
+              path: "/",
+              secure: true,
+              sameSite: "none",
+              maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+            })
+            .header("Authorization", accessToken)
+            .json({ token: accessToken, success: "password updated" });
+        }
       }
     }
   } catch (error) {
