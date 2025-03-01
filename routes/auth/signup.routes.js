@@ -26,7 +26,13 @@ const { message } = require("statuses");
 
 router.post("/signup", fileUpload(), async (req, res) => {
   console.log("je suis sur la route /signup");
+  if (!req.body) {
+    return res.status(400).json({ message: "Oups, something went wrong" });
+  }
   const { password, username, email, newsletter } = req.body;
+  if ((!username, !email, !password)) {
+    return res.status(400).json({ message: "Oups, something went wrong" });
+  }
   console.log(
     "password in signup:",
     password,
@@ -73,39 +79,37 @@ router.post("/signup", fileUpload(), async (req, res) => {
                 const date = moment().format("DD MMM YYYY");
                 console.log("date in /users:", date);
                 if (hash !== null && hash !== undefined) {
-                  if (req.body !== undefined) {
-                    const user = new User({
-                      email: email,
-                      account: {
-                        username: username,
-                      },
-                      newsletter: newsletter,
-                      hash: hash,
-                      salt: salt,
-                      date: date,
-                    });
-                    console.log("newUser in /signup:", user);
-                    //verification de l'object user avant sauvegarde en BDD:
-                    try {
-                      const userValidation = userValid.parse(user);
-                      console.log("userValidation in /signup:", userValidation);
-                      if (userValid) {
-                        await sendEmail(user);
-                        await user.save();
-                        return res.status(200).json({
-                          message:
-                            "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^",
-                        });
-                      }
-                    } catch (error) {
-                      console.log("error:", error);
-
-                      return res.status(400).json({
-                        error,
-                        error: error.issues,
-                        message: "Oops, somethings went wrong",
+                  const user = new User({
+                    email: email,
+                    account: {
+                      username: username,
+                    },
+                    newsletter: newsletter,
+                    hash: hash,
+                    salt: salt,
+                    date: date,
+                  });
+                  console.log("newUser in /signup:", user);
+                  //verification de l'object user avant sauvegarde en BDD:
+                  try {
+                    const userValidation = userValid.parse(user);
+                    console.log("userValidation in /signup:", userValidation);
+                    if (userValid) {
+                      await sendEmail(user);
+                      await user.save();
+                      return res.status(200).json({
+                        message:
+                          "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^",
                       });
                     }
+                  } catch (error) {
+                    console.log("error:", error);
+
+                    return res.status(400).json({
+                      error,
+                      error: error.issues,
+                      message: "Oops, somethings went wrong",
+                    });
                   }
                 } else {
                   return res.status(400).json({

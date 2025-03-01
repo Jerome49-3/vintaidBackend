@@ -55,14 +55,26 @@ const userSchema = new mongoose.Schema({
   tokenIsValid: {
     type: Boolean,
   },
+  passwordIsChanged: {
+    passwordChangedAt: {
+      type: Date,
+    },
+    passwordChanged: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  stateTk: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: () => new Date(Date.now()),
   },
-  // expireAt: {
-  //   type: Date,
-  //   default: () => new Date(Date.now() + 600000),
-  // },
+  expireAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 604800000),
+  },
 });
 const User = mongoose.model("User", userSchema);
 module.exports = User;

@@ -2,12 +2,12 @@ const { Resend } = require("resend");
 // console.log("resend:", Resend);
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const sendEmailContact = async (username, email, subject, messageContact) => {
+const sendConfirmPayment = async (username, email, product_name) => {
   console.log("username on sendMail:", username);
   console.log("email on sendMail:", email);
   try {
     const admin = `Vintaid team`;
-    const sujet = `${subject}`;
+    const sujet = `Votre achat de ${product_name} est confirmé `;
     const message = `Welcome ${admin}, ${messageContact}, ${username}, ${email}`;
     const messageHtml = `
         <p>Welcome ${admin}</p>
@@ -30,4 +30,4 @@ const sendEmailContact = async (username, email, subject, messageContact) => {
     console.log("error:", error);
   }
 };
-module.exports = sendEmailContact;
+module.exports = sendConfirmPayment;

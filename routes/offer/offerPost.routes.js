@@ -206,7 +206,7 @@ router.post(
         );
         await newOffer.save();
         console.log("newOffer after Save:", newOffer);
-        return res.status(200).json({ newOffer, message: "produit crée" });
+        return res.status(201).json({ newOffer, message: "produit crée" });
       } else {
         res.status(400).json({ message: "aucune valeur dans les champs" });
       }

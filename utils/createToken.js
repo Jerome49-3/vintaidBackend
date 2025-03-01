@@ -22,12 +22,17 @@ const createToken = async (user) => {
     { expiresIn: "30m" }
   );
   // console.log("accessToken in createToken:", accessToken);
-  // Token de rafraîchissement long (7 jours)
+  // Token de session (30mn)
   const refreshToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
+  // Token de rafraîchissement long (7 jours)
   // console.log("refreshToken in createToken:", refreshToken);
-  return { accessToken, refreshToken };
+  const stateToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "10m",
+  });
+  // Token de session (30mn)
+  return { accessToken, refreshToken, stateToken };
 };
 
 module.exports = createToken;

@@ -151,6 +151,10 @@ const messagesGet = require("./routes/messages/messagesGet.routes.js");
 //mails
 const sendCode = require("./routes/emails/sendCode.routes.js");
 const contact = require("./routes/emails/contact.routes");
+//sendCodeResetPsswd
+const sendCodeResetPsswd = require("./routes/sendCodeResetPsswd/sendCodeResetPasswd.routes.js");
+//forgotPsswd
+const sendForgotPsswd = require("./routes/auth/forgotPsswd.routes.js");
 
 //************ CALL ROUTES *****************//
 //Auth
@@ -160,6 +164,7 @@ app.use("/user", loginRoutes);
 app.use("/user", verifToken);
 app.use("/user", refreshToken);
 app.use("/user", logOut);
+app.use("/user", sendForgotPsswd);
 //Offers
 app.use(offerPost);
 app.use(offerGet);
@@ -185,9 +190,13 @@ app.use(profilDel);
 //Messages
 app.use(messagesPost);
 app.use(messagesGet);
+//code
+app.use(sendCode);
 //mails
 app.use("/sendMail", sendCode);
 app.use("/sendMail", contact);
+//resetPsswdConfirmEmail
+app.use(sendCodeResetPsswd);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {

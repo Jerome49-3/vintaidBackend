@@ -25,5 +25,8 @@ const Transactions = mongoose.model("Transactions", {
   date: {
     type: String,
   },
+  number_command: {
+    type: String,
+  },
 });
 module.exports = Transactions;
