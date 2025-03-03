@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
 
 const ContactSchema = new mongoose.Schema({
-  categorie: {
-    type: String,
-  },
   subject: {
     type: String,
   },

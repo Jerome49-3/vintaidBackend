@@ -4,10 +4,18 @@ const isAuthenticated = require("../../middleware/isAuthenticated");
 const router = express.Router();
 const sendEmailContact = require("../../utils/sendEmailContact");
 const fileUpload = require("express-fileupload");
+const Contact = require("../../models/Contact");
+const User = require("../../models/User");
 
 router.post("/contact", isAuthenticated, fileUpload(), async (req, res) => {
   console.log("je suis sur la route /contact (POST)");
   const { messageContact, subject, numberCommand, numberOffer } = req.body;
+  const reqUser = req.user;
+  console.log("reqUser in /contact:", reqUser);
+  const userId = reqUser._id;
+  console.log("userId in /contact:", userId);
+  const user = await User.findById(userId);
+  console.log("user in /contact:", user);
   console.log(
     "messageContact",
     messageContact,
@@ -21,15 +29,14 @@ router.post("/contact", isAuthenticated, fileUpload(), async (req, res) => {
     "numberOffer",
     numberOffer
   );
-  const username = req?.user?.account?.username;
+  const username = user?.account?.username;
   console.log("username in /contact:", username);
-  const email = req.user.email;
+  const email = user?.email;
   console.log("email in /contact:", email);
   if (!messageContact || !subject) {
     res.status(400).json("oups a field missing");
   }
   if (messageContact && subject) {
-    res.status(200).json({ message: "Votre message à bien été publié" });
     try {
       const mailSend = await sendEmailContact(
         username,
@@ -41,6 +48,14 @@ router.post("/contact", isAuthenticated, fileUpload(), async (req, res) => {
     } catch (error) {
       console.log("error:", error);
     }
+    const newContact = new Contact({
+      categorie: subject,
+      messageContact: messageContact,
+      owner: userId,
+      date: new Date(Date.now()),
+    });
+    await newContact.save();
+    return res.status(200).json({ message: "Votre message à bien été publié" });
   }
   try {
   } catch (error) {
