@@ -16,8 +16,8 @@ router.get("/offers/:id", async (req, res) => {
   if (offerId !== undefined && offerIdIsValid !== false) {
     try {
       const offer = await Offer.findById(offerId);
-      console.log("offerId after findbyid in /offers/:id:", offerId);
-      console.log("offer in /offers/:id:", offer);
+      // console.log("offerId after findbyid in /offers/:id:", offerId);
+      // console.log("offer in /offers/:id:", offer);
       if (offer) {
         const userId = offer.owner;
         // console.log("userId in /offers/:id:", userId);

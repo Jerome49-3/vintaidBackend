@@ -52,7 +52,8 @@ const jwt = require("jsonwebtoken");
 //************ MODELS *****************//
 const Offer = require("./models/Offer.js");
 const User = require("./models/User.js");
-//************ MODELS *****************//
+
+//************ utilitaires persos *****************//
 const checkToken = require("./utils/checkToken.js");
 const errorCheckToken = require("./utils/errorCheckToken.js");
 //************ CONFIG WEBSOCKET *****************//
@@ -65,6 +66,43 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ noServer: true });
 // console.log(`wss:`, wss);
 
+// mongoose.connection.once("open", () => {
+//   console.log("Connexion Mongoose établie");
+
+//   const User = mongoose.connection.collection("User");
+//   const Offer = mongoose.connection.collection("Offer");
+//   const Contact = mongoose.connection.collection("Contact");
+
+//   const setupChangeStream = (collection, eventType) => {
+//     const changeStream = collection.watch();
+
+//     changeStream.on("change", (change) => {
+//       console.log(`Change detected in ${collection.name}:`, {
+//         operationType: change.operationType,
+//         documentKey: change.documentKey,
+//       });
+
+//       wss.clients.forEach((client) => {
+//         client.send(
+//           JSON.stringify({
+//             type: eventType,
+//             timestamp: new Date().toISOString(),
+//           })
+//         );
+//       });
+//     });
+
+//     changeStream.on("error", (error) => {
+//       console.error(`Error in ${collection.name} change stream:`, error);
+//     });
+
+//     return changeStream;
+//   };
+
+//   const changeStreamUsers = setupChangeStream(User, "REFRESH_USERS");
+//   const changeStreamOffers = setupChangeStream(Offer, "REFRESH_OFFERS");
+//   const changeStreamContacts = setupChangeStream(Contact, "REFRESH_CONTACT");
+// });
 server.on("upgrade", (request, socket, head) => {
   const pathname = new URL(request.url, `http://${request.headers.host}`)
     .pathname;
@@ -83,6 +121,16 @@ wss.on("connection", (connection, request) => {
   const pathname = new URL(request.url, `http://${request.headers.host}`)
     .pathname;
   // console.log("pathname:", pathname);
+  // const reqHeaders = request.headers;
+  // console.log("reqHeaders in index.js on wss:", reqHeaders);
+  console.log("request.headers.cookie:", request.headers.cookie);
+  const reqHeadersCook = request.headers.cookie;
+  const cookies = cookie.parse(reqHeadersCook);
+  console.log("cookies in index.js:", cookies);
+  const token = cookies.accessTokenV;
+  if (!token) {
+    connection.close();
+  }
 
   const offerId = pathname.split("/")[2]; // Récupère l'ID de l'offre
   console.log(`Nouvelle connexion WebSocket pour l'offre ${offerId}`);
@@ -146,11 +194,14 @@ const profilGet = require("./routes/profile/profileGet.routes.js");
 const profilPut = require("./routes/profile/profilePut.routes.js");
 const profilDel = require("./routes/profile/profileDel.routes.js");
 //Messages
-const messagesPost = require("./routes/messages/messagesPost.routes.js");
-const messagesGet = require("./routes/messages/messagesGet.routes.js");
+const messagesPost = require("./routes/messagesChat/messagesPost.routes.js");
+const messagesGet = require("./routes/messagesChat/messagesGet.routes.js");
+const messagesContactGet = require("./routes/messagesContact/GET/messagesContact.routes.js");
+const mssgContactIdGet = require("./routes/messagesContact/GET/messagesContactId.routes.js");
+const mssgContactIdPost = require("./routes/messagesContact/POST/messageContactId.routes.js");
 //mails
 const sendCode = require("./routes/emails/sendCode.routes.js");
-const contact = require("./routes/emails/contact.routes");
+const sendContact = require("./routes/emails/sendContact.routes.js");
 //sendCodeResetPsswd
 const sendCodeResetPsswd = require("./routes/sendCodeResetPsswd/sendCodeResetPasswd.routes.js");
 //forgotPsswd
@@ -190,11 +241,15 @@ app.use(profilDel);
 //Messages
 app.use(messagesPost);
 app.use(messagesGet);
+app.use(messagesContactGet);
+app.use(mssgContactIdGet);
+app.use(mssgContactIdPost);
 //code
 app.use(sendCode);
 //mails
 app.use("/sendMail", sendCode);
-app.use("/sendMail", contact);
+app.use("/sendMail", sendContact);
+
 //resetPsswdConfirmEmail
 app.use(sendCodeResetPsswd);
 

@@ -11,7 +11,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 //models
 const Offer = require("../../models/Offer.js");
 const User = require("../../models/User.js");
-const Messages = require("../../models/Messages.js");
+const MessagesChat = require("../../models/MessagesChat.js");
 
 router.post(
   "/messages/:OfferID",
@@ -24,7 +24,7 @@ router.post(
     const offerID = new mongoose.Types.ObjectId(req.params.OfferID);
     // console.log("offerID on POST /messages/:OfferID:", offerID);
 
-    let newMessagesArr = await Messages.find({ offerId: offerID });
+    let newMessagesArr = await MessagesChat.find({ offerId: offerID });
     // console.log("newMessagesArr in /messages/:OfferID:", newMessagesArr);
     const offer = await Offer.findOne(offerID).populate({
       path: "owner",
@@ -51,7 +51,7 @@ router.post(
     const date = await moment().locale("fr").format("L LT");
     // console.log("date in /messages/:OfferID:", date);
     // console.log("typeof date in /messages/:OfferID:", typeof date);
-    const newMessages = new Messages({
+    const newMessages = new MessagesChat({
       text: newMessage,
       date: date,
       offerId: offerID,

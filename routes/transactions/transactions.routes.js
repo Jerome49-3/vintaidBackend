@@ -6,6 +6,7 @@ const isAuthenticated = require("../../middleware/isAuthenticated.js");
 const Transactions = require("../../models/Transactions.js");
 
 router.get("/transactions", isAuthenticated, async (req, res) => {
+  // console.log("req.headers in transactions:", req.headers);
   console.log("je suis sur la route /transactions");
   const { title, numberCommand } = req.query;
   // console.log(

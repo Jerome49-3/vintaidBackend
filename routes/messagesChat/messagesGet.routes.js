@@ -11,7 +11,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 //models
 const Offer = require("../../models/Offer.js");
 const User = require("../../models/User.js");
-const Messages = require("../../models/Messages.js");
+const MessagesChat = require("../../models/MessagesChat.js");
 
 router.get("/messages/:OfferID", isAuthenticated, async (req, res) => {
   console.log("Je suis sur la route GET /messages/:OfferID");
@@ -21,7 +21,7 @@ router.get("/messages/:OfferID", isAuthenticated, async (req, res) => {
   //   "mongoose.Types.ObjectId.isValid(id):",
   //   mongoose.Types.ObjectId.isValid(OfferID)
   // );
-  const messagesGet = await Messages.find({ offerId: OfferID });
+  const messagesGet = await MessagesChat.find({ offerId: OfferID });
   // console.log("messagesGet in /messages/:OfferID:", messagesGet);
   return res.status(200).json(messagesGet);
 });

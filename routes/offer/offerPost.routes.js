@@ -25,7 +25,7 @@ router.post(
         brand,
         size,
         color,
-        rotations,
+        pictures,
       } = req.body;
       // console.log(
       //   "title in /offer/publish:",
@@ -52,8 +52,10 @@ router.post(
       //   "color in /offer/publish:",
       //   color
       // );
-      console.log("req.body:", req.body);
+      // console.log("req.body:", req.body);
       console.log("req.files:", req.files);
+      console.log("req.files:", req.files.pictures);
+      console.log("typeof req.files.pictures:", typeof req.files.pictures);
       if (req.body !== undefined) {
         // console.log(
         //   "req.user.id in /offer/publish:",
@@ -74,21 +76,18 @@ router.post(
           ],
           owner: req.user,
         });
-        console.log("newOffer before Save:", newOffer);
+        // console.log("newOffer before Save:", newOffer);
         try {
           //**** verifier la précense de req.files.pîctures ****//
-          console.log("req.files before if /offer/publish:", "\n", req.files);
+          // console.log("req.files before if /offer/publish:", "\n", req.files);
           console.log(
             "req.files.pictures before if /offer/publish:",
             "\n",
             req.files.pictures
           );
-          if (req.files !== null && req.files.pictures !== 0) {
+          if (req.files && req.files.pictures) {
             const arrayPictures = Array.isArray(req.files.pictures);
-            console.log(
-              "arrayPictures after if req.files !== null && req.files.pictures !== 0 on /offer/publish:",
-              arrayPictures
-            );
+            console.log("Array.isArray(req.files.pictures):", arrayPictures);
             if (arrayPictures !== false) {
               for (let i = 0; i < req.files.pictures.length; i++) {
                 console.log(
@@ -167,39 +166,15 @@ router.post(
           console.log("error:", error, "\n", "error.message:", error.message);
         }
         console.log("newOffer._id:", newOffer._id);
-        //je crée un tableau de rotations d'images vide
-        // let arrRotate = [];
-        const arrRotation = JSON.parse(rotations);
-        console.log(
-          "arrRotation:",
-          arrRotation,
-          "\n",
-          "typeof arrRotation:",
-          typeof arrRotation
-        );
-        console.log("Array.isArray(arrRotation):", Array.isArray(arrRotation));
 
         if (req.uploadOneFile || req.uploadMultiFile) {
           newOffer.product_image = req.uploadOneFile;
           newOffer.product_pictures = req.uploadMultiFile;
-          console.log("arrRotation.length:", arrRotation.length);
-          if (arrRotation.length === 1) {
-            console.log("arrRotation[0]:", arrRotation[0]);
-            newOffer.product_image.rotation = arrRotation[0];
-          } else {
-            for (let i = 0; i < arrRotation.length; i++) {
-              const tabRotation = arrRotation[i];
-              console.log("tabRotation:", tabRotation);
-              newOffer.product_pictures.rotation = tabRotation;
-            }
-          }
         }
-        // newOffer.product_image = req.uploadOneFile;
         console.log(
           "newOffer.product_image before newOffer.save():",
           newOffer.product_image
         );
-        // newOffer.product_pictures = req.uploadMultiFile;
         console.log(
           "newOffer.product_pictures before newOffer.save():",
           newOffer.product_pictures

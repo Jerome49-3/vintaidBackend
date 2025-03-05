@@ -12,7 +12,7 @@ const ContactSchema = new mongoose.Schema({
     ref: "User",
   },
   date: {
-    type: Date,
+    type: String,
   },
 });
 

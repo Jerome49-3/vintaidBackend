@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { object } = require("zod");
 
-const Messages = mongoose.model("Messages", {
+const MessagesChat = mongoose.model("Messages", {
   text: {
     type: String,
     maxLength: 500,
@@ -18,4 +18,4 @@ const Messages = mongoose.model("Messages", {
     type: Object,
   },
 });
-module.exports = Messages;
+module.exports = MessagesChat;

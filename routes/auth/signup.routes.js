@@ -76,7 +76,7 @@ router.post("/signup", fileUpload(), async (req, res) => {
                 // const hash = await bcrypt.hash(password, 16);
                 // console.log("hash in signup:", hash);
                 // si le hash, token different de null
-                const date = moment().format("DD MMM YYYY");
+                const date = moment().format("L");
                 console.log("date in /users:", date);
                 if (hash !== null && hash !== undefined) {
                   const user = new User({
