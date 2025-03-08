@@ -11,9 +11,11 @@ router.get("/myOffers", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route /myOffers");
   const user = req.user;
   console.log("user on /myOffers:", user);
-  const userOffers = await Offer.find({ owner: user });
+  const userId = user._id;
+  const userAccount = user.account;
+  console.log("userAccount on /myOffers:", userAccount);
+  const userOffers = await Offer.find({ owner: userId });
   console.log("userOffers on /myOffers:", userOffers);
-  const userId = user.id;
   let arrUserOffers = [];
   for (let i = 0; i < userOffers.length; i++) {
     const el = userOffers[i];
@@ -23,8 +25,8 @@ router.get("/myOffers", isAuthenticated, async (req, res) => {
     // console.log("typeof userId in /offers:", typeof userId);
     // const userIdIsValid = mongoose.isValidObjectId(userId);
     // console.log("userIdIsValid in /offers:", userIdIsValid);
-    const ownerFind = await User.findById(userId).select("account");
-    // console.log("ownerFind in for in /offers:", ownerFind);
+    // const ownerFind = await User.findById(userId).select("account");
+    // console.log("ownerFind in for on /myOffers:", ownerFind);
     arrUserOffers.push({
       _id: el._id,
       product_name: el.product_name,
@@ -34,7 +36,10 @@ router.get("/myOffers", isAuthenticated, async (req, res) => {
       product_image: el.product_image,
       product_pictures: el.product_pictures,
       offer_solded: el.offer_solded,
-      owner: ownerFind,
+      owner: {
+        username: userAccount.username,
+        avatar: userAccount.avatar.secure_url,
+      },
     });
   }
   console.log("arrUserOffers on /myOffers:", arrUserOffers);

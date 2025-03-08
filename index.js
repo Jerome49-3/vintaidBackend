@@ -177,6 +177,7 @@ const offerPost = require("./routes/offer/offerPost.routes.js");
 const offerGet = require("./routes/offer/offerGet.routes.js");
 const offerID = require("./routes/offer/offersID.routes.js");
 const myOffers = require("./routes/myOffers/myOffers.routes");
+const offerDelete = require("./routes/offer/offerDel.routes.js");
 //Payment
 const payment = require("./routes/payment/payment.routes.js");
 const confirmPayment = require("./routes/payment/confirmPayment.routes.js");
@@ -221,6 +222,7 @@ app.use(offerPost);
 app.use(offerGet);
 app.use(offerID);
 app.use(myOffers);
+app.use(offerDelete);
 //Payment
 app.use(payment);
 app.use(confirmPayment);

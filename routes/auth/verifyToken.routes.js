@@ -44,8 +44,11 @@ router.post("/verifyToken", async (req, res) => {
   } catch (error) {
     const newError = errorCheckToken(error);
     console.log("newError in /verifyToken:", newError);
-    if (newError) {
-      res.status(498).json({ errorMessage: newError.message });
+    if (
+      newError.name === "TokenExpiredError" &&
+      newError.message === "jwt expired"
+    ) {
+      res.json({ errorMessage: newError.message });
     }
   }
 });

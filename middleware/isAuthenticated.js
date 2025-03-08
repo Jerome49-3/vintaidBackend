@@ -27,7 +27,8 @@ const isAuthenticated = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(newAccessToken, process.env.JWT_SECRET);
-    // console.log("decoded newAccessToken in isAuthenticated:", decoded);
+    console.log("decoded newAccessToken in isAuthenticated:", decoded);
+    req.accessToken = newAccessToken;
     req.user = decoded;
     next();
   } catch (error) {
@@ -36,9 +37,9 @@ const isAuthenticated = async (req, res, next) => {
     } else {
       try {
         const decoded = jwt.verify(NewRefreshToken, process.env.JWT_SECRET);
-        // console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
+        console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
         const user = await User.findById(decoded._id);
-        // console.log("user in isAuthenticated:", user);
+        console.log("user find with NewRefreshToken in isAuthenticated:", user);
         const { accessToken, refreshToken } = await createToken(user);
         if (process.env.NODE_ENV === "developpement") {
           res
@@ -51,8 +52,8 @@ const isAuthenticated = async (req, res, next) => {
               maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
             })
             .header("Authorization", accessToken);
-          req.user = decoded;
-          // console.log(" req.user in isAuthenticated:", req.user);
+          req.user = user;
+          console.log(" req.user in isAuthenticated:", req.user);
           next();
         } else {
           res
@@ -64,10 +65,21 @@ const isAuthenticated = async (req, res, next) => {
               maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
             })
             .header("Authorization", accessToken);
-          req.token = accessToken;
+          req.refreshToken = accessToken;
           // console.log(" req.token in isAuthenticated:", req.token);
-          req.user = decoded;
-          // console.log(" req.user in isAuthenticated:", req.user);
+          const user = await User.findById(decoded)
+            .populate({
+              path: "owner",
+              select: "account",
+            })
+            .populate({
+              path: "passwordIsChanged",
+            })
+            .select(
+              "email newsletter isAdmin becomeAdmin emailIsConfirmed loginFailed lockDate isLocked lockUntil code date tokenIsValid"
+            );
+          req.user = user;
+          console.log(" req.user in isAuthenticated:", req.user);
           next();
         }
       } catch (error) {

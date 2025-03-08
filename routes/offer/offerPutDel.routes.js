@@ -57,20 +57,3 @@
 //     }
 //   }
 // );
-
-// router.delete("/offer/:id", isAuthenticated, fileUpload(), async (req, res) => {
-//   console.log("je suis sur la route delete /offer/:id");
-//   try {
-//     if (mongoose.Types.ObjectId.isValid(findOfferByID)) {
-//       await Offer.findByIdAndDelete(req.params.id);
-//     } else {
-//       res.status(400).json({ message: "Bad request" });
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-//     res.status(500).json({ message: error.message });
-//   }
-//   res.status(200).json({ message: "l'offre à été supprimé" });
-// });
-
-// module.exports = router;

@@ -42,7 +42,7 @@ router.post("/login", fileUpload(), async (req, res) => {
     }
 
     const user = await User.findOne({ email: email });
-    console.log("user on /login:", user);
+    // console.log("user on /login:", user);
     if (!user) {
       return res.status(400).json({ message: "Bad request." });
     }
@@ -56,8 +56,8 @@ router.post("/login", fileUpload(), async (req, res) => {
         user.isLocked = false;
         user.loginFailed = 0;
         await user.save();
-        console.log("user.isLocked on /login:", user.isLocked);
-        console.log("user.loginFailed on /login:", user.loginFailed);
+        // console.log("user.isLocked on /login:", user.isLocked);
+        // console.log("user.loginFailed on /login:", user.loginFailed);
       } else {
         return res
           .status(403)
@@ -85,13 +85,13 @@ router.post("/login", fileUpload(), async (req, res) => {
       const { accessToken, refreshToken } = await createToken(user);
       user.token = accessToken;
       await user.save();
-      console.log(
-        "accessToken in /login:",
-        accessToken,
-        "\n",
-        "refreshToken in /login:",
-        refreshToken
-      );
+      // console.log(
+      //   "accessToken in /login:",
+      //   accessToken,
+      //   "\n",
+      //   "refreshToken in /login:",
+      //   refreshToken
+      // );
       if (process.env.NODE_ENV === "developpement") {
         // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
         res

@@ -16,17 +16,8 @@ router.post(
 
     // console.log("req:", req);
     try {
-      const {
-        title,
-        description,
-        price,
-        condition,
-        city,
-        brand,
-        size,
-        color,
-        pictures,
-      } = req.body;
+      const { title, description, price, condition, city, brand, size, color } =
+        req.body;
       // console.log(
       //   "title in /offer/publish:",
       //   title,
@@ -54,15 +45,18 @@ router.post(
       // );
       // console.log("req.body:", req.body);
       console.log("req.files:", req.files);
-      console.log("req.files:", req.files.pictures);
-      console.log("typeof req.files.pictures:", typeof req.files.pictures);
+      //**** je stocke req.files.pictures dans une constante ****//
+      const picUpload = req.files.pictures;
+      console.log("picUpload on /offer/publish (POST):", picUpload);
+      const arrayPictures = Array.isArray(picUpload);
+      console.log("arrayPictures on /offer/publish (POST):", arrayPictures);
       if (req.body !== undefined) {
-        // console.log(
-        //   "req.user.id in /offer/publish:",
-        //   req.user.id,
-        //   "req.user.account.username in /offer/publish:",
-        //   req.user.account.username
-        // );
+        console.log(
+          "req.user.id in /offer/publish:",
+          req.user._id,
+          "req.user.account.username in /offer/publish:",
+          req.user.account.username
+        );
         const newOffer = new Offer({
           product_name: title,
           product_description: description,
@@ -80,32 +74,22 @@ router.post(
         try {
           //**** verifier la précense de req.files.pîctures ****//
           // console.log("req.files before if /offer/publish:", "\n", req.files);
-          console.log(
-            "req.files.pictures before if /offer/publish:",
-            "\n",
-            req.files.pictures
-          );
-          if (req.files && req.files.pictures) {
-            const arrayPictures = Array.isArray(req.files.pictures);
-            console.log("Array.isArray(req.files.pictures):", arrayPictures);
+          if (req.files && picUpload) {
             if (arrayPictures !== false) {
-              for (let i = 0; i < req.files.pictures.length; i++) {
+              for (let i = 0; i < picUpload.length; i++) {
                 console.log(
-                  "req.files.pictures[i] after for in /offer/publish:",
+                  "picUpload[i] after for on /offer/publish (POST):",
                   "\n",
-                  req.files.pictures[i]
+                  picUpload[i]
                 );
-                if (req.files.pictures[i].size < 10485760) {
+                if (picUpload[i].size < 10485760) {
                   console.log(
-                    "req.files.pictures[i].size after for in /offer/publish::",
-                    req.files.pictures[i].size
+                    "picUpload[i].size after for on /offer/publish (POST):",
+                    picUpload[i].size
                   );
-                  //**** je stocke req.files.pictures dans une constante ****//
-                  const picUpload = req.files.pictures;
-                  console.log("picUpload:", picUpload);
                   //**** pour chaque image convertir en base64 et envoyer les envoyer les images à cloudinary ****//
-                  const arrayOfPromises = picUpload.map((picture) => {
-                    console.log("picture:", picture);
+                  const arrayOfPromises = await picUpload.map((picture) => {
+                    console.log("picture on /offer/publish (POST):", picture);
                     return cloudinary.uploader.upload(
                       convertToBase64(picture),
                       {
@@ -113,13 +97,20 @@ router.post(
                       }
                     );
                   });
+                  console.log(
+                    "arrayOfPromises on /offer/publish (POST):",
+                    arrayOfPromises
+                  );
                   //**** attendre le fin de l'upload pour tous les fichiers et les stocker dans une constante ****//
                   const result = await Promise.all(arrayOfPromises);
-                  console.log("resultPromise:", result);
-                  //**** stocker les informations des images dans req ****//
-                  req.uploadMultiFile = result;
                   console.log(
-                    "req.uploadMultiFile in /publish:",
+                    "resultPromise on /offer/publish (POST):",
+                    result
+                  );
+                  //**** stocker les informations des images dans req ****//
+                  req.uploadMultiFile = await result;
+                  console.log(
+                    "req.uploadMultiFile on /offer/publish (POST):",
                     req.uploadMultiFile
                   );
                 } else {
@@ -129,24 +120,27 @@ router.post(
                   });
                 }
               }
-            } else if (arrayPictures === false) {
-              if (req.files.pictures.size < 10485760) {
+            } else {
+              if (picUpload.size < 10485760) {
                 console.log(
-                  "req.files.pictures.size after if in /offer/publish::",
-                  req.files.pictures.size
+                  "picUpload.size after if on /offer/publish (POST):",
+                  picUpload.size
                 );
                 //**** on convertit le buffer (données en language binaire, temporaire pour être utilisé) de l'image en base64 pour etre compris par cloudinary ****//
                 const result = await cloudinary.uploader.upload(
-                  convertToBase64(req.files.pictures),
+                  convertToBase64(picUpload),
                   {
                     folder: "vinted/offers/" + newOffer._id,
                   }
                 );
-                console.log("resultnotPromise:", result);
-                //**** je stocke les données de la conversion en base64 du buffer de l'image dans req ****//
-                req.uploadOneFile = result;
                 console.log(
-                  "req.uploadOneFile in /publish:",
+                  "resultnotPromise on /offer/publish (POST):",
+                  result
+                );
+                //**** je stocke les données de la conversion en base64 du buffer de l'image dans req ****//
+                req.uploadOneFile = await result;
+                console.log(
+                  "req.uploadOneFile on /offer/publish (POST):",
                   req.uploadOneFile
                 );
               } else {
@@ -163,24 +157,31 @@ router.post(
           }
         } catch (error) {
           //**** si le try echoue (erreur server), on retourne une erreur ****//
-          console.log("error:", error, "\n", "error.message:", error.message);
+          console.log(
+            "error on /offer/publish (POST):",
+            error,
+            "\n",
+            "error.message on /offer/publish (POST):",
+            error.message
+          );
         }
-        console.log("newOffer._id:", newOffer._id);
+        console.log("newOffer._id on /offer/publish (POST):", newOffer._id);
 
-        if (req.uploadOneFile || req.uploadMultiFile) {
+        if (req.uploadOneFile) {
           newOffer.product_image = req.uploadOneFile;
+        } else {
           newOffer.product_pictures = req.uploadMultiFile;
         }
         console.log(
-          "newOffer.product_image before newOffer.save():",
+          "newOffer.product_image before newOffer.save() on /offer/publish (POST):",
           newOffer.product_image
         );
         console.log(
-          "newOffer.product_pictures before newOffer.save():",
+          "newOffer.product_pictures before newOffer.save() on /offer/publish (POST):",
           newOffer.product_pictures
         );
         await newOffer.save();
-        console.log("newOffer after Save:", newOffer);
+        console.log("newOffer after Save on /offer/publish (POST):", newOffer);
         return res.status(201).json({ newOffer, message: "produit crée" });
       } else {
         res.status(400).json({ message: "aucune valeur dans les champs" });
@@ -192,4 +193,5 @@ router.post(
     }
   }
 );
+
 module.exports = router;
