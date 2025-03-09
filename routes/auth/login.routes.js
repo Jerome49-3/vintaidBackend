@@ -53,11 +53,15 @@ router.post("/login", fileUpload(), async (req, res) => {
       // console.log("unlock on /login:", unlock);
 
       if (unlock) {
-        user.isLocked = false;
-        user.loginFailed = 0;
-        await user.save();
-        // console.log("user.isLocked on /login:", user.isLocked);
-        // console.log("user.loginFailed on /login:", user.loginFailed);
+        try {
+          user.isLocked = false;
+          user.loginFailed = 0;
+          await user.save();
+          // console.log("user.isLocked on /login:", user.isLocked);
+          // console.log("user.loginFailed on /login:", user.loginFailed);
+        } catch (error) {
+          console.log("error for unlock:", error);
+        }
       } else {
         return res
           .status(403)
@@ -66,64 +70,77 @@ router.post("/login", fileUpload(), async (req, res) => {
     }
     if (user.emailIsConfirmed !== false) {
       const pwdHash = SHA256(password + user.salt).toString(encBase64);
+      console.log("pwdHash !== user.hash:", pwdHash, user.hash);
       if (pwdHash !== user.hash) {
-        setLockAndCountLoginFailed(user);
-        await user.save();
-        if (user.loginFailed >= 3) {
-          return res
-            .status(400)
-            .json({ message: "Oops, something went wrong" });
+        try {
+          console.log("pwdHash !== user.hash:", pwdHash, user.hash);
+          setLockAndCountLoginFailed(user);
+          await user.save();
+          if (user.loginFailed >= 3) {
+            return res
+              .status(400)
+              .json({ message: "Oops, your account is blocked" });
+          }
+        } catch (error) {
+          console.log("error for setLockAndCountLoginFailed:", error);
+        }
+      } else {
+        try {
+          if (user.becomeAdmin) {
+            user.isAdmin = true;
+            user.becomeAdmin = false;
+            await user.save();
+          }
+          const { accessToken, refreshToken } = await createToken(user);
+          user.token = accessToken;
+          await user.save();
+          // console.log(
+          //   "accessToken in /login:",
+          //   accessToken,
+          //   "\n",
+          //   "refreshToken in /login:",
+          //   refreshToken
+          // );
+          if (process.env.NODE_ENV === "developpement") {
+            // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
+            res
+              .cookie("refreshTokenV", refreshToken, {
+                httpOnly: true,
+                path: "/",
+                domain: "localhost",
+                secure: true,
+                sameSite: "none",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+              })
+              .header("Authorization", accessToken)
+              .json({ token: accessToken });
+          } else {
+            res
+              .cookie("refreshTokenV", refreshToken, {
+                httpOnly: true,
+                path: "/",
+                secure: true,
+                sameSite: "none",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+              })
+              .header("Authorization", accessToken)
+              .json({ token: accessToken });
+          }
+        } catch (error) {
+          console.log("error for pwdHash === user.hash:", error);
         }
       }
-
-      if (user.becomeAdmin) {
-        user.isAdmin = true;
-        user.becomeAdmin = false;
-        await user.save();
-      }
-
-      const { accessToken, refreshToken } = await createToken(user);
-      user.token = accessToken;
-      await user.save();
-      // console.log(
-      //   "accessToken in /login:",
-      //   accessToken,
-      //   "\n",
-      //   "refreshToken in /login:",
-      //   refreshToken
-      // );
-      if (process.env.NODE_ENV === "developpement") {
-        // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
-        res
-          .cookie("refreshTokenV", refreshToken, {
-            httpOnly: true,
-            path: "/",
-            domain: "localhost",
-            secure: true,
-            sameSite: "none",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
-          })
-          .header("Authorization", accessToken)
-          .json({ token: accessToken });
-      } else {
-        res
-          .cookie("refreshTokenV", refreshToken, {
-            httpOnly: true,
-            path: "/",
-            secure: true,
-            sameSite: "none",
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
-          })
-          .header("Authorization", accessToken)
-          .json({ token: accessToken });
-      }
     } else {
-      sendEmail(user);
-      await user.save();
-      return res.status(400).json({
-        message:
-          "Votre email n'est pas confirmé: un nouveau code de confirmation vient de vous être envoyé",
-      });
+      try {
+        sendEmail(user);
+        await user.save();
+        return res.status(400).json({
+          message:
+            "Votre email n'est pas confirmé: un nouveau code de confirmation vient de vous être envoyé",
+        });
+      } catch (error) {
+        console.log("error for sendEmail:", error);
+      }
     }
   } catch (error) {
     // console.log("error in catch:", error);
