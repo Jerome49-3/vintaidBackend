@@ -18,10 +18,9 @@ router.put("/profile/:id", isAuthenticated, fileUpload(), async (req, res) => {
   try {
     // console.log("req.body in PUT /users/:id:", req.body);
     //faire une recherche de l'user par l'id de l'user.
-    // let { pictures, username, email, isAdmin, newsletter, userId } = req.body;
+    // let { username, email, isAdmin, newsletter, userId } = req.body;
     console.log("req.file in /profile/:id (PUT):", req.file);
 
-    let pictures;
     let username;
     let email;
     let newsletter;

@@ -173,11 +173,14 @@ const verifToken = require("./routes/auth/verifyToken.routes.js");
 const refreshToken = require("./routes/auth/refresh.routes.js");
 const logOut = require("./routes/auth/logOut.routes.js");
 //Offers
-const offerPost = require("./routes/offer/offerPost.routes.js");
-const offerGet = require("./routes/offer/offerGet.routes.js");
-const offerID = require("./routes/offer/offersID.routes.js");
+const offersPost = require("./routes/offers/POST/offersPost.routes.js");
+const offersGet = require("./routes/offers/GET/offersGet.routes.js");
+//offerId
+const offerIdGet = require("./routes/offerId/GET/offersID.routes.js");
+const offerIdDel = require("./routes/offerId/DELETE/offerIdDel.routes.js");
+const offerIdPut = require("./routes/offerId/PUT/offerIdPut.routes.js");
+//myOffers
 const myOffers = require("./routes/myOffers/myOffers.routes");
-const offerDelete = require("./routes/offer/offerDel.routes.js");
 //Payment
 const payment = require("./routes/payment/payment.routes.js");
 const confirmPayment = require("./routes/payment/confirmPayment.routes.js");
@@ -218,11 +221,14 @@ app.use("/user", refreshToken);
 app.use("/user", logOut);
 app.use("/user", sendForgotPsswd);
 //Offers
-app.use(offerPost);
-app.use(offerGet);
-app.use(offerID);
+app.use(offersPost);
+app.use(offersGet);
+//OfferId
+app.use(offerIdGet);
+app.use(offerIdDel);
+app.use(offerIdPut);
+//myOffers
 app.use(myOffers);
-app.use(offerDelete);
 //Payment
 app.use(payment);
 app.use(confirmPayment);

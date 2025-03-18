@@ -65,7 +65,10 @@ router.post("/login", fileUpload(), async (req, res) => {
       } else {
         return res
           .status(403)
-          .json({ message: "Your account is currently locked." });
+          .json({
+            message: "Your account is currently locked.",
+            accountLocked: true,
+          });
       }
     }
     if (user.emailIsConfirmed !== false) {

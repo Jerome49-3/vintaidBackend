@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 //models
-const Offer = require("../../models/Offer");
-const User = require("../../models/User");
+const Offer = require("../../../models/Offer");
+const User = require("../../../models/User");
 
-router.get("/offers/:id", async (req, res) => {
+router.get("/offer/:id", async (req, res) => {
   console.log("je suis sur la route /offers/:id (GET):");
   const offerId = req.params.id;
-  console.log("offerId in /offers/:id", offerId);
+  // console.log("offerId in /offers/:id", offerId);
 
   const offerIdIsValid = mongoose.isValidObjectId(offerId);
   // console.log("offerIdIsValid in /offers/:id:", offerIdIsValid);
@@ -23,7 +23,7 @@ router.get("/offers/:id", async (req, res) => {
         // console.log("userId in /offers/:id:", userId);
         const ownerFind = await User.findById(userId).select("account");
         // console.log("ownerFind after findbyid in /offers/:id:", ownerFind);
-        // const offerDetails = offer.product_details;
+        const offerDetails = offer.product_details;
         // console.log("offerDetails:", offerDetails);
         res.status(200).json({
           product_name: offer.product_name,
@@ -31,7 +31,6 @@ router.get("/offers/:id", async (req, res) => {
           product_price: offer.product_price,
           product_details: offer.product_details,
           offer_solded: offer.offer_solded,
-          product_image: offer.product_image,
           product_pictures: offer.product_pictures,
           product_id: offer._id,
           owner: ownerFind,

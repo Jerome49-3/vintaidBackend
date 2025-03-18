@@ -3,13 +3,13 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 //middleware
-const isAuthenticated = require("../../middleware/isAuthenticated");
+const isAuthenticated = require("../../../middleware/isAuthenticated");
 
 //models
-const Offer = require("../../models/Offer");
-const User = require("../../models/User");
+const Offer = require("../../../models/Offer");
+const User = require("../../../models/User");
 
-router.delete("/offerDelete/:id", isAuthenticated, async (req, res) => {
+router.delete("/offer/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route delete /offer/:id (DELETE):");
   console.log("req.user in /offer/:id (DELETE)", req.user);
   userId = req.user._id;

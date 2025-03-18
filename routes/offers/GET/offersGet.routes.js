@@ -3,8 +3,8 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 //models
-const Offer = require("../../models/Offer");
-const User = require("../../models/User");
+const Offer = require("../../../models/Offer");
+const User = require("../../../models/User");
 
 router.get("/offers", async (req, res) => {
   console.log("je suis sur la route /offers");
