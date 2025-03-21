@@ -27,7 +27,7 @@ const isAuthenticated = async (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(newAccessToken, process.env.JWT_SECRET);
-    console.log("decoded newAccessToken in isAuthenticated:", decoded);
+    // console.log("decoded newAccessToken in isAuthenticated:", decoded);
     req.accessToken = newAccessToken;
     req.user = decoded;
     next();
@@ -37,9 +37,9 @@ const isAuthenticated = async (req, res, next) => {
     } else {
       try {
         const decoded = jwt.verify(NewRefreshToken, process.env.JWT_SECRET);
-        console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
+        // console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
         const user = await User.findById(decoded._id);
-        console.log("user find with NewRefreshToken in isAuthenticated:", user);
+        // console.log("user find with NewRefreshToken in isAuthenticated:", user);
         const { accessToken, refreshToken } = await createToken(user);
         if (process.env.NODE_ENV === "developpement") {
           res
@@ -53,7 +53,7 @@ const isAuthenticated = async (req, res, next) => {
             })
             .header("Authorization", accessToken);
           req.user = user;
-          console.log(" req.user in isAuthenticated:", req.user);
+          // console.log(" req.user in isAuthenticated:", req.user);
           next();
         } else {
           res
@@ -79,7 +79,7 @@ const isAuthenticated = async (req, res, next) => {
               "email newsletter isAdmin becomeAdmin emailIsConfirmed loginFailed lockDate isLocked lockUntil code date tokenIsValid"
             );
           req.user = user;
-          console.log(" req.user in isAuthenticated:", req.user);
+          // console.log(" req.user in isAuthenticated:", req.user);
           next();
         }
       } catch (error) {

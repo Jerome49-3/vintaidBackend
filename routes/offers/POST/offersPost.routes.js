@@ -74,7 +74,7 @@ router.post(
         try {
           //**** verifier la précense de req.files.pîctures ****//
           // console.log("req.files before if /offer/publish:", "\n", req.files);
-          if (req.files && picUpload) {
+          if (picUpload) {
             if (arrayPictures !== false) {
               for (let i = 0; i < picUpload.length; i++) {
                 console.log(
@@ -120,6 +120,35 @@ router.post(
                   });
                 }
               }
+            } else {
+              if (picUpload.size < 10485760) {
+                console.log(
+                  "picUpload.size after if on /offer/publish (POST):",
+                  picUpload.size
+                );
+                //**** on convertit le buffer (données en language binaire, temporaire pour être utilisé) de l'image en base64 pour etre compris par cloudinary ****//
+                const result = await cloudinary.uploader.upload(
+                  convertToBase64(picUpload),
+                  {
+                    folder: "vinted/offers/" + newOffer._id,
+                  }
+                );
+                console.log(
+                  "resultnotPromise on /offer/publish (POST):",
+                  result
+                );
+                //**** je stocke les données de la conversion en base64 du buffer de l'image dans req ****//
+                req.uploadOneFile = await result;
+                console.log(
+                  "req.uploadOneFile on /offer/publish (POST):",
+                  req.uploadOneFile
+                );
+              } else {
+                res.status(400).json({
+                  message:
+                    "image size too large, max: 10485760 bytes. Please compress your file. You can do it here for example: https://compressor.io/",
+                });
+              }
             }
           } else {
             return res
@@ -138,16 +167,14 @@ router.post(
         }
         console.log("newOffer._id on /offer/publish (POST):", newOffer._id);
 
-        if (req.uploadOneFile) {
-          // {
-          //   newOffer.product_image = req.uploadOneFile;
-          // } else
+        if (req.uploadOneFile || req.uploadMultiFile) {
+          newOffer.product_image = req.uploadOneFile;
           newOffer.product_pictures = req.uploadMultiFile;
         }
-        // console.log(
-        //   "newOffer.product_image before newOffer.save() on /offer/publish (POST):",
-        //   newOffer.product_image
-        // );
+        console.log(
+          "newOffer.product_image before newOffer.save() on /offer/publish (POST):",
+          newOffer.product_image
+        );
         console.log(
           "newOffer.product_pictures before newOffer.save() on /offer/publish (POST):",
           newOffer.product_pictures
