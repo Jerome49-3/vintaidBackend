@@ -9,9 +9,21 @@ router.get("/transactionId/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route /transactionId/:id");
   const transId = req.params.id;
   console.log("transId in /transactions/:id (GET):", transId);
-  const transactions = await Transactions.findById({ _id: transId });
-  console.log("transactions in /transactions/:id (GET):", transactions);
-  return res.status(200).json(transactions);
+  const transactionId = await Transactions.findById({ _id: transId }).populate([
+    {
+      path: "buyer",
+      select: "account.username account.avatar.secure_url email date",
+    },
+    {
+      path: "offer",
+      populate: {
+        path: "owner",
+        select: "account.username account.avatar.secure_url email date",
+      },
+    },
+  ]);
+  console.log("transactionId in /transactions/:id (GET):", transactionId);
+  return res.status(200).json(transactionId);
 });
 
 module.exports = router;

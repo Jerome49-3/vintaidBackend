@@ -12,6 +12,7 @@ router.get("/myOffers", isAuthenticated, async (req, res) => {
   const user = req.user;
   console.log("user on /myOffers:", user);
   const userId = user._id;
+  console.log("userId on /myOffers:", userId);
   const userAccount = user.account;
   console.log("userAccount on /myOffers:", userAccount);
   const userOffers = await Offer.find({ owner: userId });
@@ -42,7 +43,7 @@ router.get("/myOffers", isAuthenticated, async (req, res) => {
       },
     });
   }
-  console.log("arrUserOffers on /myOffers:", arrUserOffers);
+  console.log("arrUserOffers before res on /myOffers:", arrUserOffers);
   res.status(200).json(arrUserOffers);
 });
 

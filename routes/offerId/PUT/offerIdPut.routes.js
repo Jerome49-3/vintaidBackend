@@ -135,18 +135,18 @@ router.put("/offer/:id", isAuthenticated, fileUpload(), async (req, res) => {
             req.files.pictures
           );
           const picUpload = req.files.pictures;
-          if (offer.product_pictures.length > 0) {
+          const definePicUpload = Array.isArray(picUpload);
+          console.log("definePicUpload in /offer/:id (PUT):", definePicUpload);
+          if (
+            offer.product_pictures !== null &&
+            offer.product_pictures !== undefined
+          ) {
             let newOfferProductPictures = [...offer.product_pictures];
             console.log(
               "newOfferProductPictures in /offer/:id (PUT):",
               newOfferProductPictures
             );
-            const definePicUpload = Array.isArray(picUpload);
-            console.log(
-              "definePicUpload in /offer/:id (PUT):",
-              definePicUpload
-            );
-            if (definePicUpload !== false) {
+            if (typeof picUpload === "object" && definePicUpload !== false) {
               try {
                 for (let i = 0; i < picUpload.length; i++) {
                   console.log(
@@ -287,13 +287,71 @@ router.put("/offer/:id", isAuthenticated, fileUpload(), async (req, res) => {
               }
             }
           } else {
-            // let newObjProductImage = { ...offer.product_image };
+            let newObjProductImage = { ...offer.product_image };
+            try {
+              if (picUpload.size < 10485760) {
+                console.log(
+                  "picUpload.size after if on /offer/publish (POST):",
+                  picUpload.size
+                );
+                //**** on convertit le buffer (données en language binaire, temporaire pour être utilisé) de l'image en base64 pour etre compris par cloudinary ****//
+                const result = await cloudinary.uploader.upload(
+                  convertToBase64(picUpload),
+                  {
+                    folder: "vinted/offers/" + offer._id,
+                  }
+                );
+                console.log(
+                  "resultnotPromise on /offer/publish (POST):",
+                  result
+                );
+                //**** je stocke les données de la conversion en base64 du buffer de l'image dans req ****//
+                req.uploadOneFile = await result;
+                console.log(
+                  "req.uploadOneFile on /offer/publish (POST):",
+                  req.uploadOneFile
+                );
+              } else {
+                res.status(400).json({
+                  message:
+                    "image size too large, max: 10485760 bytes. Please compress your file. You can do it here for example: https://compressor.io/",
+                });
+              }
+            } catch (error) {
+              console.log("error on save one image on cloudinary:", error);
+            }
+            try {
+              const arrInfoImgSupp = JSON.parse(infoImgSupp);
+              console.log(
+                "arrInfoImgSupp 1 in /offer/:id (PUT):",
+                arrInfoImgSupp
+              );
+              for (let i = 0; i < arrInfoImgSupp.length; i++) {
+                const elementArrInfoImgSupp = arrInfoImgSupp[i];
+                console.log("elementArrInfoImgSupp:", elementArrInfoImgSupp);
+                const index = elementArrInfoImgSupp.indexImgSupp;
+                console.log("typeof index:", typeof index);
+                const publicId = elementArrInfoImgSupp.imgSuppPublicId;
+                console.log("publicId:", publicId);
+                const imgDeletedOnCloudinary =
+                  await cloudinary.uploader.destroy(publicId);
+                console.log("imgDeletedOnCloudinary:", imgDeletedOnCloudinary);
+                newObjProductImage.splice(index, 1, req.uploadOneFile);
+                req.newProductPictureImage = newObjProductImage;
+              }
+            } catch (error) {
+              console.log("error on for arrInfoImgSupp:", error);
+            }
           }
           try {
           } catch (error) {
             console.log("pictureError in /offer/:id (PUT):", error);
           }
-          updateObj.product_pictures = req.newProductPictures;
+          if (req.newProductPictures) {
+            updateObj.product_pictures = req.newProductPictures;
+          } else {
+            updateObj.product_image = req.newProductPictureImage;
+          }
         }
       } catch (error) {
         console.log("error in req.files.pictures:", error);

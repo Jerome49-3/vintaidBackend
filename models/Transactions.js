@@ -11,13 +11,11 @@ const Transactions = mongoose.model("Transactions", {
     max: 100000,
     required: true,
   },
-  seller: Object,
-  buyer: Object,
-  product_id: {
+  offer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Offer",
   },
-  buyerId: {
+  buyer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },

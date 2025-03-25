@@ -13,29 +13,51 @@ router.get("/transactions", isAuthenticated, async (req, res) => {
   //   "title in /transactions:",
   //   title,
   //   "\n",
-  //   "num in /transactions:",
-  //   num
+  //   "numberCommand in /transactions:",
+  //   numberCommand
   // );
   let filter = {};
   if (title) {
     filter.product_name = new RegExp(title, "i");
   }
-  // if (num) {
-  //   const searchPrice = Number(num);
-  //   // console.log("searchPrice in /transactions:", searchPrice);
-  //   filter.product_price = searchPrice;
-  // }
   if (numberCommand) {
     console.log("numberCommand in /transactions:", numberCommand);
     filter.number_command = new RegExp(numberCommand, "i");
   }
   if (title || numberCommand) {
-    const transactions = await Transactions.find(filter);
-    // console.log("transactions in /transactions (GET):", transactions);
+    const transactions = await Transactions.find(filter).populate([
+      {
+        path: "offer",
+        match: { product_name: title },
+      },
+      {
+        path: "seller",
+        select: "account email",
+        match: { "account.username": title },
+      },
+      {
+        path: "buyer",
+        select: "account email",
+        match: { "account.username": title },
+      },
+    ]);
+    console.log("transactions in /transactions (GET):", transactions);
     return res.status(200).json(transactions);
   } else {
-    const transactions = await Transactions.find();
-    // console.log("transactions in /transactions (GET):", transactions);
+    const transactions = await Transactions.find().populate([
+      {
+        path: "buyer",
+        select: "account.username account.avatar.secure_url",
+      },
+      {
+        path: "offer",
+        populate: {
+          path: "owner",
+          select: "account.username account.avatar.secure_url email date",
+        },
+      },
+    ]);
+    console.log("transactions in /transactions (GET):", transactions);
     return res.status(200).json(transactions);
   }
 });
