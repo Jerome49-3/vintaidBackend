@@ -9,7 +9,7 @@ const User = require("../../models/User");
 const sendEmail = require("../../utils/sendEmail");
 
 router.post("/sendCode/:id", async (req, res) => {
-  console.log("je suis sur la route sendEmail (POST)");
+  console.log("je suis sur la route /sendCode/:id (POST)");
   try {
     const id = req.params.id;
     console.log("id on /sendEmailCode/:id:", id);

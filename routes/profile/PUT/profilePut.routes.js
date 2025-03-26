@@ -1,16 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const isAuthenticated = require("../../middleware/isAuthenticated.js");
+const isAuthenticated = require("../../../middleware/isAuthenticated.js");
 const fileUpload = require("express-fileupload");
 const cloudinary = require("cloudinary").v2;
-const convertToBase64 = require("../../utils/convertToBase64.js");
+const convertToBase64 = require("../../../utils/convertToBase64.js");
 const { message } = require("statuses");
 const jwt = require("jsonwebtoken");
-const createToken = require("../../utils/createToken.js");
+const createToken = require("../../../utils/createToken.js");
 
 //models
-const User = require("../../models/User.js");
+const User = require("../../../models/User.js");
 
 router.put("/profile/:id", isAuthenticated, fileUpload(), async (req, res) => {
   console.log("je suis sur la route /profile/:id (PUT)");

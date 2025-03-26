@@ -190,24 +190,26 @@ const mypurchases = require("./routes/mypurchases/mypurchases.routes.js");
 const transactionsId = require("./routes/transactions/transactionsId.routes.js");
 //Users
 const users = require("./routes/users/users.routes.js");
-const userIdGet = require("./routes/users/userIdGet.routes.js");
-const userIdPut = require("./routes/users/userIdPut.routes.js");
-const userIdDel = require("./routes/users/userIdDel.routes.js");
+//UserId
+const userIdGet = require("./routes/userId/GET/userIdGet.routes.js");
+const userIdPut = require("./routes/userId/PUT/userIdPut.routes.js");
+const userIdDel = require("./routes/userId/DEL/userIdDel.routes.js");
 //Profile
-const profilGet = require("./routes/profile/profileGet.routes.js");
-const profilPut = require("./routes/profile/profilePut.routes.js");
-const profilDel = require("./routes/profile/profileDel.routes.js");
+const profilGet = require("./routes/profile/GET/profileGet.routes.js");
+const profilPut = require("./routes/profile/PUT/profilePut.routes.js");
+const profilDel = require("./routes/profile/DEL/profileDel.routes.js");
 //Messages
-const messagesPost = require("./routes/messagesChat/messagesPost.routes.js");
-const messagesGet = require("./routes/messagesChat/messagesGet.routes.js");
+const messagesPost = require("./routes/messagesChat/POST/messagesPost.routes.js");
+const messagesGet = require("./routes/messagesChat/GET/messagesGet.routes.js");
 const messagesContactGet = require("./routes/messagesContact/GET/messagesContact.routes.js");
 const mssgContactIdGet = require("./routes/messagesContact/GET/messagesContactId.routes.js");
 const mssgContactIdPost = require("./routes/messagesContact/POST/messageContactId.routes.js");
 //mails
-const sendCode = require("./routes/emails/sendCode.routes.js");
-const sendContact = require("./routes/emails/sendContact.routes.js");
-//sendCodeResetPsswd
-const sendCodeResetPsswd = require("./routes/sendCodeResetPsswd/sendCodeResetPasswd.routes.js");
+const sendCode = require("./routes/sendMail/sendCode.routes.js");
+const sendCodeId = require("./routes/sendMail/sendCodeId.routes.js");
+const sendContact = require("./routes/sendMail/sendContact.routes.js");
+//resendEmailPsswd
+const resendEmailPsswd = require("./routes/resendEmailPsswd/resendEmailPsswd.routes.js");
 //forgotPsswd
 const sendForgotPsswd = require("./routes/auth/forgotPsswd.routes.js");
 
@@ -234,6 +236,7 @@ app.use(payment);
 app.use(confirmPayment);
 //Users
 app.use(users);
+//UserID
 app.use(userIdGet);
 app.use(userIdPut);
 app.use(userIdDel);
@@ -254,12 +257,13 @@ app.use(mssgContactIdGet);
 app.use(mssgContactIdPost);
 //code
 app.use(sendCode);
-//mails
+//sendMail
 app.use("/sendMail", sendCode);
+app.use("/sendMail", sendCodeId);
 app.use("/sendMail", sendContact);
 
-//resetPsswdConfirmEmail
-app.use(sendCodeResetPsswd);
+//resendEmailPsswd
+app.use(resendEmailPsswd);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {

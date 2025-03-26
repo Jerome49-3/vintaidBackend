@@ -6,8 +6,9 @@ const fileUpload = require("express-fileupload");
 
 //models
 const User = require("../../models/User");
+const errorCheckToken = require("../../utils/errorCheckToken");
 
-router.post("/resendEmail", fileUpload(), async (req, res) => {
+router.post("/resendEmailPsswd", fileUpload(), async (req, res) => {
   console.log("je suis sur la route /resetPsswdConfirmEmail (POST)");
 
   try {
@@ -40,7 +41,12 @@ router.post("/resendEmail", fileUpload(), async (req, res) => {
       }
     }
   } catch (error) {
-    console.log("error in catch:", error);
+    console.log("error in catch in /resetPsswdConfirmEmail:", error);
+    const errorResetPsswd = errorCheckToken(error);
+    console.log(
+      "errorResetPsswd in catch in /resetPsswdConfirmEmail:",
+      errorResetPsswd
+    );
   }
 });
 

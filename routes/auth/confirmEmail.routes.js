@@ -24,8 +24,10 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
   const codeInput = JSON.parse(code).join("");
   if (codeInput) {
     console.log("codeInput in /confirmemail:", codeInput);
-    const user = await User.findOne({ code: codeInput });
-    // console.log("user in /confirmemail:", user);
+    const user = await User.findOne({ code: codeInput }).select(
+      "-hash -salt -becomeAdmin"
+    );
+    console.log("user in /confirmemail:", user);
     if (user) {
       // console.log("user in /confirmemail:", user);
       const { accessToken, refreshToken } = await createToken(user);
@@ -44,8 +46,8 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       await user.save();
       //DEVELLOPPEMENT
       if (newEmailSended === false) {
+        console.log("emailSended === false");
         console.log("typeof false", typeof false);
-
         if (process.env.NODE_ENV === "developpement") {
           console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
           return res
@@ -83,7 +85,7 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       } else {
         console.log("emailSended === true");
         const { stateToken } = await createToken(user);
-        console.log("stateToken in /forgotPassword:", stateToken);
+        console.log("stateToken in /confirmemail:", stateToken);
         user.emailIsConfirmed = true;
         user.stateTk = stateToken;
         await user.save();

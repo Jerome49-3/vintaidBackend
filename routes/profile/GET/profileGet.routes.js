@@ -1,11 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const isAuthenticated = require("../../middleware/isAuthenticated.js");
-const createToken = require("../../utils/createToken.js");
+const isAuthenticated = require("../../../middleware/isAuthenticated.js");
+const createToken = require("../../../utils/createToken.js");
 
 //models
-const User = require("../../models/User.js");
+const User = require("../../../models/User.js");
 
 router.get("/profile/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route /profile (GET)");

@@ -37,19 +37,6 @@ router.get("/mypurchases", isAuthenticated, async (req, res) => {
       ]);
       // // for all offer who as offerSolded is true, i put them on a Array
       console.log("transactionsfinded on /mypurchases:", transactionsfinded);
-      // for (let i = 0; i < transactionsfinded.length; i++) {
-      //   const transactions = transactionsfinded[i];
-      //   console.log("transactions on /mypurchases:", transactions);
-      //   // const offerID = transactions.product_id;
-      //   // console.log("offerID on /mypurchases:", offerID);
-      //   // const offersFinded = await Offer.findById(offerID);
-      //   // console.log("offersFinded on /mypurchases:", offersFinded);
-      //   // const ownerFind = await User.findById(userId).select("account");
-      //   // console.log("offersFinded on /mypurchases:", offersFinded);
-      //   myTransactions.push(transactions);
-      // }
-      // console.log("myTransactions on /mypurchases:", myTransactions);
-      // i return the Array who's contain the offer whe as offerSolded is true
       return res.status(200).json(transactionsfinded);
     } catch (error) {
       console.log("error on /mypurchases:", error);
