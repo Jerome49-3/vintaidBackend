@@ -67,14 +67,14 @@ const userSchema = new mongoose.Schema({
   stateTk: {
     type: String,
   },
-  createdAt: {
-    type: Date,
-    default: () => new Date(Date.now()),
-  },
-  expireAt: {
-    type: Date,
-    default: () => new Date(Date.now() + 604800000),
-  },
+  // createdAt: {
+  //   type: Date,
+  //   default: () => new Date(Date.now()),
+  // },
+  // expireAt: {
+  //   type: Date,
+  //   default: Date.now() + 604800000,
+  // },
 });
 const User = mongoose.model("User", userSchema);
 module.exports = User;

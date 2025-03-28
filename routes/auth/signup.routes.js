@@ -58,6 +58,7 @@ router.post("/signup", fileUpload(), async (req, res) => {
       if (emailAndUsernameAreValid) {
         //si le mot de passe est differend d'undefined
         if (password !== undefined && email !== undefined) {
+          //i check if user exist
           const user = await User.findOne({ email: email });
           console.log("userfindWithEmail in signup:", user);
           if (user) {
@@ -66,16 +67,16 @@ router.post("/signup", fileUpload(), async (req, res) => {
               .json({ message: "email already exist: please login" });
           } else {
             try {
-              // si password est egale à confirmPassword
+              // if password equal confirmPassword
               if (password) {
-                //génerer le salt hash, token
+                //i create: salt hash, token
                 const salt = uid2(16);
                 // console.log("salt in signup:", salt);
                 const hash = SHA256(password + salt).toString(encBase64);
                 // console.log("hash in signup:", hash);
                 // const hash = await bcrypt.hash(password, 16);
                 // console.log("hash in signup:", hash);
-                // si le hash, token different de null
+                // if hash and token is different from null
                 const date = moment().format("L");
                 console.log("date in /users:", date);
                 if (hash !== null && hash !== undefined) {
@@ -90,12 +91,18 @@ router.post("/signup", fileUpload(), async (req, res) => {
                     date: date,
                   });
                   console.log("newUser in /signup:", user);
-                  //verification de l'object user avant sauvegarde en BDD:
+                  //check object user before saving in the BDD:
                   try {
+                    // I check the object user structure with the Zod library
                     const userValidation = userValid.parse(user);
                     console.log("userValidation in /signup:", userValidation);
                     if (userValid) {
-                      await sendEmail(user);
+                      // I assign the result of the sendEmail function
+                      const resultSendEmail = await sendEmail(user);
+                      console.log(
+                        "resultSendEmail in /signup:",
+                        resultSendEmail
+                      );
                       await user.save();
                       return res.status(200).json({
                         message:

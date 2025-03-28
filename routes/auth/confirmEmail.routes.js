@@ -18,7 +18,7 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
     "emailSended in /confirmemail:",
     emailSended
   );
-  const newEmailSended = Boolean(emailSended);
+  const newEmailSended = new Boolean(emailSended);
   console.log("newEmailSended in /confirmemail:", newEmailSended);
   console.log("typeof newEmailSended in /confirmemail:", typeof newEmailSended);
   const codeInput = JSON.parse(code).join("");
@@ -28,6 +28,11 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       "-hash -salt -becomeAdmin"
     );
     console.log("user in /confirmemail:", user);
+    if (!user) {
+      res.status(400).json({
+        message: "Oups, somethings went wrong: please, check your code",
+      });
+    }
     if (user) {
       // console.log("user in /confirmemail:", user);
       const { accessToken, refreshToken } = await createToken(user);
@@ -45,7 +50,7 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       }
       await user.save();
       //DEVELLOPPEMENT
-      if (newEmailSended === false) {
+      if (emailSended === "false") {
         console.log("emailSended === false");
         console.log("typeof false", typeof false);
         if (process.env.NODE_ENV === "developpement") {
@@ -86,7 +91,14 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
         console.log("emailSended === true");
         const { stateToken } = await createToken(user);
         console.log("stateToken in /confirmemail:", stateToken);
+        user.stateTk = stateToken;
         user.emailIsConfirmed = true;
+        if (user.emailIsConfirmed !== false) {
+          await User.updateOne(
+            { code: codeInput },
+            { $unset: { expireAt: "" } }
+          );
+        }
         user.stateTk = stateToken;
         await user.save();
         return res.status(200).json({

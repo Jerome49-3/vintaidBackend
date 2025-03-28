@@ -24,66 +24,73 @@ router.post("/forgotPsswd", fileUpload(), async (req, res) => {
       confirmPassword
     );
     console.log("req?.headers?.authorization:", req?.headers?.authorization);
-
+    //i assigne the token constant  with req.headers.authorization
     const token = req?.headers?.authorization?.replace("Bearer ", "");
     console.log("token in /forgotPsswd:", token);
-    const tokenValid = await checkToken(token);
-    console.log("tokenValid in /forgotPsswd:", tokenValid);
-    const userId = tokenValid._id;
-    console.log("userId in /forgotPsswd:", userId);
-    if (password === confirmPassword) {
-      const salt = uid2(16);
-      const hashPassword = SHA256(password + salt).toString(encBase64);
-      const hashConfirmPassword = SHA256(confirmPassword + salt).toString(
-        encBase64
-      );
-      if (hashPassword !== hashConfirmPassword) {
-        return res.status(400).json({ message: "Both passwords do not match" });
-      } else {
-        const updatedUser = await User.findByIdAndUpdate(
-          userId,
-          {
-            hash: hashPassword,
-            passwordIsChanged: {
-              passwordChangedAt: new Date(Date.now()),
-              passwordChanged: Boolean("true"),
-            },
-            stateTk: "",
-          },
-          { new: true }
+    // i ckeck if token is valid with the function checkToken
+    if (!token) {
+      res.status(400).json({ message: "no token allowed" });
+    } else {
+      const tokenValid = await checkToken(token);
+      console.log("tokenValid in /forgotPsswd:", tokenValid);
+      const userId = tokenValid._id;
+      console.log("userId in /forgotPsswd:", userId);
+      if (password === confirmPassword) {
+        const salt = uid2(16);
+        const hashPassword = SHA256(password + salt).toString(encBase64);
+        const hashConfirmPassword = SHA256(confirmPassword + salt).toString(
+          encBase64
         );
-        console.log("updatedUser in /forgotPsswd:", updatedUser);
-        const { accessToken, refreshToken } = await createToken(updatedUser);
-        console.log(
-          "accessToken in /forgotPsswd:",
-          accessToken,
-          "refreshToken in /forgotPsswd:",
-          refreshToken
-        );
-        if (process.env.NODE_ENV === "developpement") {
-          // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
-          res
-            .cookie("refreshTokenV", refreshToken, {
-              httpOnly: true,
-              path: "/",
-              domain: "localhost",
-              secure: true,
-              sameSite: "none",
-              maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
-            })
-            .header("Authorization", accessToken)
-            .json({ token: accessToken, success: "password updated" });
+        if (hashPassword !== hashConfirmPassword) {
+          return res
+            .status(400)
+            .json({ message: "Both passwords do not match" });
         } else {
-          res
-            .cookie("refreshTokenV", refreshToken, {
-              httpOnly: true,
-              path: "/",
-              secure: true,
-              sameSite: "none",
-              maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
-            })
-            .header("Authorization", accessToken)
-            .json({ token: accessToken, success: "password updated" });
+          const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            {
+              hash: hashPassword,
+              passwordIsChanged: {
+                passwordChangedAt: new Date(Date.now()),
+                passwordChanged: Boolean("true"),
+              },
+              stateTk: "",
+            },
+            { new: true }
+          );
+          console.log("updatedUser in /forgotPsswd:", updatedUser);
+          const { accessToken, refreshToken } = await createToken(updatedUser);
+          console.log(
+            "accessToken in /forgotPsswd:",
+            accessToken,
+            "refreshToken in /forgotPsswd:",
+            refreshToken
+          );
+          if (process.env.NODE_ENV === "developpement") {
+            // console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
+            res
+              .cookie("refreshTokenV", refreshToken, {
+                httpOnly: true,
+                path: "/",
+                domain: "localhost",
+                secure: true,
+                sameSite: "none",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+              })
+              .header("Authorization", accessToken)
+              .json({ token: accessToken, success: "password updated" });
+          } else {
+            res
+              .cookie("refreshTokenV", refreshToken, {
+                httpOnly: true,
+                path: "/",
+                secure: true,
+                sameSite: "none",
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7jr
+              })
+              .header("Authorization", accessToken)
+              .json({ token: accessToken, success: "password updated" });
+          }
         }
       }
     }

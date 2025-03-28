@@ -6,14 +6,16 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const generateCode = require("./generateCode");
 
 const sendEmail = async (user) => {
-  console.log("user on sendMail:", user);
+  // console.log("user on sendMail:", user);
+  //i assigne username, email from user object in callback;
   const username = user.account.username;
   const email = user.email;
+  //i create a random code
   const code = generateCode(6);
   user.code = code;
-  console.log("code on sendMail:", code);
-  console.log("username on sendMail:", username);
-  console.log("email on sendMail:", email);
+  // console.log("code on sendMail:", code);
+  // console.log("username on sendMail:", username);
+  // console.log("email on sendMail:", email);
   try {
     const admin = `Vintaid team`;
     const subject = "Welcome to Vintaid, my replica of Vinted";
@@ -31,9 +33,10 @@ const sendEmail = async (user) => {
       text: message,
       html: messageHtml,
     });
+    // console.log("emailSend on sendMail:", emailSend);
     return emailSend;
   } catch (error) {
-    console.log("error:", error);
+    console.log("error in sendEmail:", error);
   }
 };
 module.exports = sendEmail;

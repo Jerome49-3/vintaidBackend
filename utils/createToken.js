@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const createToken = async (user) => {
-  // console.log("user in createToken:", user);
+  console.log("user in createToken:", user);
 
   const accessToken = jwt.sign(
     {
@@ -9,12 +9,12 @@ const createToken = async (user) => {
       account: user.account,
       newsletter: user.newsletter,
       isAdmin: user.isAdmin,
-      becomeAdmin: user.becomeAdmin,
       emailIsConfirmed: user.emailIsConfirmed,
       date: user.date,
       loginFailed: user.loginFailed,
       isLocked: user.isLocked,
-      createdAt: user.createdAt,
+      passwordIsChanged: user.passwordIsChanged,
+      // createdAt: user.createdAt,
       // expiresAt: user.expiresAt,
       _id: user._id,
     },
@@ -29,7 +29,7 @@ const createToken = async (user) => {
   // Token de rafraîchissement long (7 jours)
   // console.log("refreshToken in createToken:", refreshToken);
   const stateToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "10m",
+    expiresIn: "30m",
   });
   // Token de session (30mn)
   return { accessToken, refreshToken, stateToken };
