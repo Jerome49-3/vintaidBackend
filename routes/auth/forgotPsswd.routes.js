@@ -15,31 +15,39 @@ router.post("/forgotPsswd", fileUpload(), async (req, res) => {
   console.log("je suis sur la route forgotPsswd (POST)");
 
   try {
-    const { password, confirmPassword } = req.body;
+    const { password, confirmPassword, tokenFgtP } = req.body;
     console.log(
       "password in /forgotPsswd:",
       password,
       "\n",
       "confirmPassword in /forgotPsswd:",
-      confirmPassword
+      confirmPassword,
+      "\n",
+      "tokenFgtP in /forgotPsswd:",
+      tokenFgtP
     );
-    console.log("req?.headers?.authorization:", req?.headers?.authorization);
+    // console.log("req?.headers?.authorization:", req?.headers?.authorization);
     //i assigne the token constant  with req.headers.authorization
-    const token = req?.headers?.authorization?.replace("Bearer ", "");
-    console.log("token in /forgotPsswd:", token);
+    // const token = req?.headers?.authorization?.replace("Bearer ", "");
+    // console.log("token in /forgotPsswd:", token);
     // i ckeck if token is valid with the function checkToken
-    if (!token) {
+    if (!tokenFgtP) {
       res.status(400).json({ message: "no token allowed" });
     } else {
-      const tokenValid = await checkToken(token);
+      const tokenValid = await checkToken(tokenFgtP);
       console.log("tokenValid in /forgotPsswd:", tokenValid);
       const userId = tokenValid._id;
       console.log("userId in /forgotPsswd:", userId);
       if (password === confirmPassword) {
         const salt = uid2(16);
         const hashPassword = SHA256(password + salt).toString(encBase64);
+        console.log("hashPassword in /forgotPsswd:", hashPassword);
         const hashConfirmPassword = SHA256(confirmPassword + salt).toString(
           encBase64
+        );
+        console.log(
+          "hashConfirmPassword in /forgotPsswd:",
+          hashConfirmPassword
         );
         if (hashPassword !== hashConfirmPassword) {
           return res
@@ -50,6 +58,7 @@ router.post("/forgotPsswd", fileUpload(), async (req, res) => {
             userId,
             {
               hash: hashPassword,
+              salt: salt,
               passwordIsChanged: {
                 passwordChangedAt: new Date(Date.now()),
                 passwordChanged: Boolean("true"),

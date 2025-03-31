@@ -7,6 +7,8 @@ const fileUpload = require("express-fileupload");
 //models
 const User = require("../../models/User");
 const errorCheckToken = require("../../utils/errorCheckToken");
+const createToken = require("../../utils/createToken");
+const checkToken = require("../../utils/checkToken");
 
 router.post("/resendEmailPsswd", fileUpload(), async (req, res) => {
   console.log("je suis sur la route /resetPsswdConfirmEmail (POST)");
@@ -30,17 +32,23 @@ router.post("/resendEmailPsswd", fileUpload(), async (req, res) => {
 
       if (user) {
         const emailSended = await sendEmail(user);
-        await user.save();
         console.log("emailSended in /resetPsswdConfirmEmail:", emailSended);
         console.log(
           "emailSended.error in /resetPsswdConfirmEmail:",
           emailSended.error
         );
-        if (emailSended.error === null) {
-          // res.redirect(301, "http://localhost:5173/confirmemail");
-          res
-            .status(200)
-            .json({ token: user?.stateTk, success: "/confirmemail" });
+        await user.save();
+        const { stateToken } = await createToken(user);
+        console.log("stateToken in /resetPsswdConfirmEmail:", stateToken);
+        const tokenIsValid = await checkToken(stateToken);
+        console.log("tokenIsValid in /resetPsswdConfirmEmail:", tokenIsValid);
+        if (tokenIsValid) {
+          if (emailSended.error === null) {
+            // res.redirect(301, "http://localhost:5173/confirmemail");
+            res
+              .status(200)
+              .json({ tokenId: stateToken, success: "/confirmemail" });
+          }
         }
       }
     }

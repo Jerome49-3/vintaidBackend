@@ -30,7 +30,7 @@ router.get("/offer/:id", async (req, res) => {
           product_image: offer.product_image,
           product_pictures: offer.product_pictures,
           product_id: offer._id,
-          owner: offer.owner.account,
+          owner: offer.owner,
         });
       } else {
         return res.status(400).json({ infoUser: "no offer with this id" });

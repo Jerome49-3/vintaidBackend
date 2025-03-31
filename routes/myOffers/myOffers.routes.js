@@ -17,7 +17,7 @@ router.get("/myOffers", isAuthenticated, async (req, res) => {
   console.log("userAccount on /myOffers:", userAccount);
   const userOffers = await Offer.find({ owner: userId }).populate({
     path: "owner",
-    select: "account.avatar.secure_url account.username email",
+    select: "account",
   });
   console.log("userOffers on /myOffers:", userOffers);
   res.status(200).json(userOffers);
