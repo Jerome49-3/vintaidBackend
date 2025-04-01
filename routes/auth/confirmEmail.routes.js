@@ -10,17 +10,17 @@ const createToken = require("../../utils/createToken");
 
 router.post("/confirmemail", fileUpload(), async (req, res) => {
   console.log("je suis sur la route /confirmemail");
-  const { code, emailSended } = req.body;
+  const { code, emailSended, userCreated } = req.body;
   console.log(
     "code in /confirmemail:",
     code,
     "\n",
     "emailSended in /confirmemail:",
-    emailSended
+    emailSended,
+    "\n",
+    "userCreated in /confirmEmail:",
+    userCreated
   );
-  const newEmailSended = new Boolean(emailSended);
-  console.log("newEmailSended in /confirmemail:", newEmailSended);
-  console.log("typeof newEmailSended in /confirmemail:", typeof newEmailSended);
   const codeInput = JSON.parse(code).join("");
   if (codeInput) {
     console.log("codeInput in /confirmemail:", codeInput);
@@ -52,7 +52,7 @@ router.post("/confirmemail", fileUpload(), async (req, res) => {
       //DEVELLOPPEMENT
       if (emailSended === "false") {
         console.log("emailSended === false");
-        console.log("typeof false", typeof false);
+        console.log("typeof emailSended", typeof emailSended);
         if (process.env.NODE_ENV === "developpement") {
           console.log("process.env.NODE_ENV in /login:", process.env.NODE_ENV);
           return res

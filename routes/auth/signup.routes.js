@@ -16,6 +16,7 @@ const { Resend } = require("resend");
 const resend = new Resend(process.env.RESEND_API_KEY);
 const validEmailAndUsername = require("../../utils/zod/validEmailAndUsername");
 const userValid = require("../../utils/zod/userValid");
+const createToken = require("../../utils/createToken");
 
 //models
 const User = require("../../models/User");
@@ -91,6 +92,7 @@ router.post("/signup", fileUpload(), async (req, res) => {
                     date: date,
                   });
                   console.log("newUser in /signup:", user);
+                  console.log("newUser._id in /signup:", user._id);
                   //check object user before saving in the BDD:
                   try {
                     // I check the object user structure with the Zod library
@@ -103,8 +105,11 @@ router.post("/signup", fileUpload(), async (req, res) => {
                         "resultSendEmail in /signup:",
                         resultSendEmail
                       );
+                      const { stateToken } = createToken(user);
+                      user.stateTk = stateToken;
                       await user.save();
                       return res.status(200).json({
+                        tokenId: user.stateTk,
                         message:
                           "Merci de confirmer votre email, en entrant le code recu par mail, possiblement dans vos spams ou promotions ^_^",
                       });
@@ -120,7 +125,7 @@ router.post("/signup", fileUpload(), async (req, res) => {
                   }
                 } else {
                   return res.status(400).json({
-                    message: "les mots de passe ne correspondent pas",
+                    message: "Oops, somethings went wrong with the hash",
                   });
                 }
               }
