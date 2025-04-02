@@ -63,12 +63,10 @@ router.post("/login", fileUpload(), async (req, res) => {
           console.log("error for unlock:", error);
         }
       } else {
-        return res
-          .status(403)
-          .json({
-            message: "Your account is currently locked.",
-            accountLocked: true,
-          });
+        return res.status(403).json({
+          message: "Your account is currently locked.",
+          accountLocked: true,
+        });
       }
     }
     if (user.emailIsConfirmed !== false) {
@@ -94,6 +92,8 @@ router.post("/login", fileUpload(), async (req, res) => {
             user.becomeAdmin = false;
             await user.save();
           }
+          // i initialize loginFailed to 0;
+          user.loginFailed = 0;
           const { accessToken, refreshToken } = await createToken(user);
           user.token = accessToken;
           await user.save();

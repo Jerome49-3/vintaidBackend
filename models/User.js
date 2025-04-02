@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
   },
   loginFailed: {
     type: Number,
-    default: null,
+    default: 0,
   },
   lockDate: {
     type: Date,

@@ -22,7 +22,10 @@ router.get("/offers", async (req, res) => {
   //   "req.query.sort:",
   //   req.query.sort
   // );
-  let ownerFind;
+  console.log("page:", page);
+  console.log("typeof page:", typeof page);
+
+  // let ownerFind;
   let filter = {};
   let select = "";
   let skipNum = 0;
@@ -32,9 +35,9 @@ router.get("/offers", async (req, res) => {
   priceMax = req.query.priceMax ? Number(req.query.priceMax) : 100000;
   try {
     if (
-      req.query.title ||
-      req.query.priceMin ||
-      req.query.priceMax ||
+      req.query.title !== "" ||
+      req.query.priceMin !== 0 ||
+      req.query.priceMax !== 100000 ||
       req.query.sort !== undefined
     ) {
       // select = "product_name product_price -_id";
@@ -82,7 +85,7 @@ router.get("/offers", async (req, res) => {
       }
       //si page est différend de undefined et strictement supérieur à 0
       if (page !== undefined || page !== 0) {
-        let limitNum = 3;
+        let limitNum = 5;
         skipPage = page - 1;
         skipNum = skipPage * limitNum;
       }
@@ -97,51 +100,26 @@ router.get("/offers", async (req, res) => {
       const offers = await Offer.find(filter)
         .sort(filterSort)
         .limit(limitNum)
-        .skip(skipNum);
-      // .select(select);
-      // console.log("offers in /offers:", offers);
-      const offersWithOwner = await Promise.all(
-        offers.map(async (offer) => {
-          const owner = await User.findById(offer.owner).select("account");
-          return {
-            ...offer._doc,
-            owner,
-          };
-        })
-      );
-
-      return res.status(200).json(offersWithOwner);
-    } else {
-      // console.log("ok");
-      const newOffers = await Offer.find();
-      // console.log("offers in /offers:", offers);
-      let offers = [];
-      // const getOffer = await Offer.find().select("product_name product_price -_id");
-      // console.log("newOffers in /offers:", newOffers);
-      for (let i = 0; i < newOffers.length; i++) {
-        const el = newOffers[i];
-        // console.log("el:", el);
-        const userId = el.owner;
-        // console.log("userId in /offers:", userId);
-        // console.log("typeof userId in /offers:", typeof userId);
-        // const userIdIsValid = mongoose.isValidObjectId(userId);
-        // console.log("userIdIsValid in /offers:", userIdIsValid);
-        const ownerFind = await User.findById(userId).select("account");
-        // console.log("ownerFind in for in /offers:", ownerFind);
-        offers.push({
-          _id: el._id,
-          product_name: el.product_name,
-          product_description: el.product_description,
-          product_price: el.product_price,
-          product_details: el.product_details,
-          product_image: el.product_image,
-          product_pictures: el.product_pictures,
-          offer_solded: el.offer_solded,
-          owner: ownerFind,
+        .skip(skipNum)
+        .select(select)
+        .populate({
+          path: "owner",
+          select: "account",
         });
-      }
       // console.log("offers in /offers:", offers);
-      return res.status(200).json(offers);
+      const offersCounts = await Offer.where(filter).countDocuments();
+      // console.log("offersCounts in /offers:", offersCounts);
+      return res.status(200).json({ offers: offers, count: offersCounts });
+    } else {
+      console.log("ok");
+      const offers = await Offer.find().populate({
+        path: "owner",
+        select: "account",
+      });
+      // console.log("offers in /offers:", offers);
+      const offersCounts = await Offer.countDocuments();
+      // console.log("offersCounts in /offers:", offersCounts);
+      return res.status(200).json({ offers: offers, count: offersCounts });
     }
   } catch (error) {
     // console.log("error:", error, "\n", "error.message:", error.message);
