@@ -11,16 +11,21 @@ const User = require("../../../models/User");
 
 router.delete("/offer/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route delete /offer/:id (DELETE):");
-  console.log("req.user in /offer/:id (DELETE)", req.user);
+  // console.log("req.user in /offer/:id (DELETE)", req.user);
   userId = req.user._id;
   console.log("userId in /offer/:id (DELETE)", userId);
   const offerId = req.params.id;
   console.log("offerId in /offer/:id (DELETE)", offerId);
+  const offerIdValid = mongoose.Types.ObjectId.isValid(offerId);
+  console.log("offerIdValid in /offer/:id (DELETE)", offerIdValid);
   try {
-    if (mongoose.Types.ObjectId.isValid(offerId)) {
+    if (offerIdValid) {
       const offerDelete = await Offer.findByIdAndDelete(offerId);
       console.log("offerDelete in /offer/:id (DELETE)", offerDelete);
-      const allOffersUser = await Offer.find({ owner: userId });
+      const allOffersUser = await Offer.find({ owner: userId }).populate({
+        path: "owner",
+        select: "account",
+      });
       console.log("allOffersUser in /offer/:id (DELETE)", allOffersUser);
       res
         .status(201)
@@ -32,7 +37,6 @@ router.delete("/offer/:id", isAuthenticated, async (req, res) => {
     console.log(error.message);
     res.status(500).json({ message: error.message });
   }
-  res.status(200).json({ message: "l'offre à été supprimé" });
 });
 
 module.exports = router;

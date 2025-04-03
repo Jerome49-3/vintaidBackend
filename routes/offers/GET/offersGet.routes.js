@@ -119,7 +119,9 @@ router.get("/offers", async (req, res) => {
       // console.log("offers in /offers:", offers);
       const offersCounts = await Offer.countDocuments();
       // console.log("offersCounts in /offers:", offersCounts);
-      return res.status(200).json({ offers: offers, count: offersCounts });
+      return res
+        .status(200)
+        .json({ offers: offers, items: limitNum, count: offersCounts });
     }
   } catch (error) {
     // console.log("error:", error, "\n", "error.message:", error.message);
