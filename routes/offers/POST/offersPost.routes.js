@@ -44,19 +44,19 @@ router.post(
       //   color
       // );
       // console.log("req.body:", req.body);
-      console.log("req.files:", req.files);
+      // console.log("req.files:", req.files);
       //**** je stocke req.files.pictures dans une constante ****//
       const picUpload = req.files.pictures;
-      console.log("picUpload on /offer/publish (POST):", picUpload);
+      // console.log("picUpload on /offer/publish (POST):", picUpload);
       const arrayPictures = Array.isArray(picUpload);
-      console.log("arrayPictures on /offer/publish (POST):", arrayPictures);
+      // console.log("arrayPictures on /offer/publish (POST):", arrayPictures);
       if (req.body !== undefined) {
-        console.log(
-          "req.user.id in /offer/publish:",
-          req.user._id,
-          "req.user.account.username in /offer/publish:",
-          req.user.account.username
-        );
+        // console.log(
+        //   "req.user.id in /offer/publish:",
+        //   req.user._id,
+        //   "req.user.account.username in /offer/publish:",
+        //   req.user.account.username
+        // );
         const newOffer = new Offer({
           product_name: title,
           product_description: description,
@@ -77,42 +77,42 @@ router.post(
           if (picUpload) {
             if (arrayPictures !== false) {
               for (let i = 0; i < picUpload.length; i++) {
-                console.log(
-                  "picUpload[i] after for on /offer/publish (POST):",
-                  "\n",
-                  picUpload[i]
-                );
+                // console.log(
+                //   "picUpload[i] after for on /offer/publish (POST):",
+                //   "\n",
+                //   picUpload[i]
+                // );
                 if (picUpload[i].size < 10485760) {
-                  console.log(
-                    "picUpload[i].size after for on /offer/publish (POST):",
-                    picUpload[i].size
-                  );
+                  // console.log(
+                  //   "picUpload[i].size after for on /offer/publish (POST):",
+                  //   picUpload[i].size
+                  // );
                   //**** pour chaque image convertir en base64 et envoyer les envoyer les images à cloudinary ****//
                   const arrayOfPromises = await picUpload.map((picture) => {
-                    console.log("picture on /offer/publish (POST):", picture);
+                    // console.log("picture on /offer/publish (POST):", picture);
                     return cloudinary.uploader.upload(
                       convertToBase64(picture),
                       {
-                        folder: "vinted/offers/" + newOffer._id,
+                        folder: "vintaid/offer/" + newOffer._id,
                       }
                     );
                   });
-                  console.log(
-                    "arrayOfPromises on /offer/publish (POST):",
-                    arrayOfPromises
-                  );
+                  // console.log(
+                  //   "arrayOfPromises on /offer/publish (POST):",
+                  //   arrayOfPromises
+                  // );
                   //**** attendre le fin de l'upload pour tous les fichiers et les stocker dans une constante ****//
                   const result = await Promise.all(arrayOfPromises);
-                  console.log(
-                    "resultPromise on /offer/publish (POST):",
-                    result
-                  );
+                  // console.log(
+                  //   "resultPromise on /offer/publish (POST):",
+                  //   result
+                  // );
                   //**** stocker les informations des images dans req ****//
                   req.uploadMultiFile = await result;
-                  console.log(
-                    "req.uploadMultiFile on /offer/publish (POST):",
-                    req.uploadMultiFile
-                  );
+                  // console.log(
+                  //   "req.uploadMultiFile on /offer/publish (POST):",
+                  //   req.uploadMultiFile
+                  // );
                 } else {
                   res.status(400).json({
                     message:
@@ -122,27 +122,27 @@ router.post(
               }
             } else {
               if (picUpload.size < 10485760) {
-                console.log(
-                  "picUpload.size after if on /offer/publish (POST):",
-                  picUpload.size
-                );
+                // console.log(
+                //   "picUpload.size after if on /offer/publish (POST):",
+                //   picUpload.size
+                // );
                 //**** on convertit le buffer (données en language binaire, temporaire pour être utilisé) de l'image en base64 pour etre compris par cloudinary ****//
                 const result = await cloudinary.uploader.upload(
                   convertToBase64(picUpload),
                   {
-                    folder: "vinted/offers/" + newOffer._id,
+                    folder: "vintaid/offer/" + newOffer._id,
                   }
                 );
-                console.log(
-                  "resultnotPromise on /offer/publish (POST):",
-                  result
-                );
+                // console.log(
+                //   "resultnotPromise on /offer/publish (POST):",
+                //   result
+                // );
                 //**** je stocke les données de la conversion en base64 du buffer de l'image dans req ****//
                 req.uploadOneFile = await result;
-                console.log(
-                  "req.uploadOneFile on /offer/publish (POST):",
-                  req.uploadOneFile
-                );
+                // console.log(
+                //   "req.uploadOneFile on /offer/publish (POST):",
+                //   req.uploadOneFile
+                // );
               } else {
                 res.status(400).json({
                   message:
@@ -165,22 +165,22 @@ router.post(
             error.message
           );
         }
-        console.log("newOffer._id on /offer/publish (POST):", newOffer._id);
+        // console.log("newOffer._id on /offer/publish (POST):", newOffer._id);
 
         if (req.uploadOneFile || req.uploadMultiFile) {
           newOffer.product_image = req.uploadOneFile;
           newOffer.product_pictures = req.uploadMultiFile;
         }
-        console.log(
-          "newOffer.product_image before newOffer.save() on /offer/publish (POST):",
-          newOffer.product_image
-        );
-        console.log(
-          "newOffer.product_pictures before newOffer.save() on /offer/publish (POST):",
-          newOffer.product_pictures
-        );
+        // console.log(
+        //   "newOffer.product_image before newOffer.save() on /offer/publish (POST):",
+        //   newOffer.product_image
+        // );
+        // console.log(
+        //   "newOffer.product_pictures before newOffer.save() on /offer/publish (POST):",
+        //   newOffer.product_pictures
+        // );
         await newOffer.save();
-        console.log("newOffer after Save on /offer/publish (POST):", newOffer);
+        // console.log("newOffer after Save on /offer/publish (POST):", newOffer);
         return res.status(201).json({ newOffer, message: "produit crée" });
       } else {
         res.status(400).json({ message: "aucune valeur dans les champs" });

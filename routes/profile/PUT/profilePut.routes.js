@@ -48,7 +48,7 @@ router.put("/profile/:id", isAuthenticated, fileUpload(), async (req, res) => {
           const result = await cloudinary.uploader.upload(
             convertToBase64(pictureToUpload),
             {
-              folder: "vinted/users/" + findUserId._id,
+              folder: "vintaid/user/" + findUserId._id,
             }
           );
           findUserId.account.avatar = result;
