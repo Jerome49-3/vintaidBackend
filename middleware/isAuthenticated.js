@@ -75,9 +75,7 @@ const isAuthenticated = async (req, res, next) => {
             .populate({
               path: "passwordIsChanged",
             })
-            .select(
-              "email newsletter isAdmin becomeAdmin emailIsConfirmed loginFailed lockDate isLocked lockUntil code date tokenIsValid"
-            );
+            .select("-hash -salt");
           req.user = user;
           // console.log(" req.user in isAuthenticated:", req.user);
           next();

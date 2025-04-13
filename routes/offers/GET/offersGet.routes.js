@@ -9,22 +9,24 @@ const User = require("../../../models/User");
 router.get("/offers", async (req, res) => {
   console.log("je suis sur la route /offers");
   let { title, priceMin, priceMax, sort, page } = req.query;
-  // console.log(
-  //   "req.query.title:",
-  //   req.query.title,
-  //   "\n",
-  //   "req.query.priceMin:",
-  //   req.query.priceMin,
-  //   "\n",
-  //   "req.query.priceMax:",
-  //   req.query.priceMax,
-  //   "\n",
-  //   "req.query.sort:",
-  //   req.query.sort
-  // );
-  console.log("page:", page);
-  console.log("typeof page:", typeof page);
-
+  console.group("req.query on /offers");
+  console.log(
+    "title:",
+    title,
+    "\n",
+    "priceMin:",
+    priceMin,
+    "\n",
+    "priceMax:",
+    priceMax,
+    "\n",
+    "sort:",
+    sort,
+    "\n",
+    "page:",
+    page
+  );
+  console.groupEnd();
   // let ownerFind;
   let filter = {};
   let select = "";
@@ -35,10 +37,11 @@ router.get("/offers", async (req, res) => {
   priceMax = req.query.priceMax ? Number(req.query.priceMax) : 100000;
   try {
     if (
-      req.query.title !== "" ||
-      req.query.priceMin !== 0 ||
-      req.query.priceMax !== 100000 ||
-      req.query.sort !== undefined
+      title !== "" ||
+      priceMin !== 0 ||
+      priceMax !== 100000 ||
+      sort !== undefined ||
+      page !== 1
     ) {
       // select = "product_name product_price -_id";
       // console.log('page:', page)

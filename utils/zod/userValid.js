@@ -15,6 +15,7 @@ const userValid = z.object({
   hash: z.string().optional(),
   salt: z.string().optional(),
   isAdmin: z.boolean().default(false),
+  isOnline: z.boolean().default(false),
   becomeAdmin: z.boolean().default(false),
   emailIsConfirmed: z.boolean().default(false),
   loginFailed: z.number().nullable(),

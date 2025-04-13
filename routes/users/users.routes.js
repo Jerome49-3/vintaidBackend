@@ -21,9 +21,7 @@ router.get("/users", isAuthenticated, async (req, res) => {
         { "account.username": new RegExp(title, "i") },
         { email: new RegExp(title, "i") },
       ];
-      const lastUsers = await User.find(filter).select(
-        "account email isAdmin becomeAdmin emailIsConfirmed loginFailed isLocked newsletter date createdAt expiresAt"
-      );
+      const lastUsers = await User.find(filter).select("-hash -salt");
       console.log("lastUsers in /users:", lastUsers);
       res.status(200).json(lastUsers);
     } catch (error) {
@@ -32,30 +30,8 @@ router.get("/users", isAuthenticated, async (req, res) => {
     }
   } else {
     try {
-      const users = await User.find();
-      // console.log("users in /users:", users);
-      let lastUsers = [];
-      for (let i = 0; i < users.length; i++) {
-        const el = users[i];
-        // console.log("el:", el);
-        lastUsers.push({
-          account: el.account,
-          email: el.email,
-          newsletter: el.newsletter,
-          date: el.date,
-          isAdmin: el.isAdmin,
-          id: el._id,
-          token: el.token,
-          isLocked: el.isLocked,
-          lockDate: el.lockDate,
-          lockUntil: el.lockUntil,
-          loginFailed: el.loginFailed,
-          emailIsConfirmed: el.emailIsConfirmed,
-          becomeAdmin: el.becomeAdmin,
-          createdAt: el.createdAt,
-          expiresAt: el.expiresAt,
-        });
-      }
+      const lastUsers = await User.find().select("-hash -salt");
+      console.log("lastUsers in /users:", lastUsers);
       res.status(200).json(lastUsers);
     } catch (error) {
       console.log("error in catch:", error);

@@ -40,9 +40,10 @@ router.post("/login", fileUpload(), async (req, res) => {
     if (!password || !email) {
       return res.status(400).json({ message: "input is missing" });
     }
-
+    console.time("searchUser on /login");
     const user = await User.findOne({ email: email });
-    // console.log("user on /login:", user);
+    console.log("user on /login:", user);
+    console.timeEnd("searchUser on /login");
     if (!user) {
       return res.status(400).json({ message: "Bad request." });
     }
@@ -54,11 +55,15 @@ router.post("/login", fileUpload(), async (req, res) => {
 
       if (unlock) {
         try {
+          console.time("calc time unlock on /login");
           user.isLocked = false;
           user.loginFailed = 0;
           await user.save();
+          console.timeEnd("calc time unlock on /login");
+          console.group("user.isLocked && user.loginFailed");
           // console.log("user.isLocked on /login:", user.isLocked);
           // console.log("user.loginFailed on /login:", user.loginFailed);
+          console.groupEnd();
         } catch (error) {
           console.log("error for unlock:", error);
         }
@@ -94,6 +99,7 @@ router.post("/login", fileUpload(), async (req, res) => {
           }
           // i initialize loginFailed to 0;
           user.loginFailed = 0;
+          user.isOnline = true;
           const { accessToken, refreshToken } = await createToken(user);
           user.token = accessToken;
           await user.save();
@@ -146,7 +152,7 @@ router.post("/login", fileUpload(), async (req, res) => {
       }
     }
   } catch (error) {
-    // console.log("error in catch:", error);
+    console.log("error in catch:", error);
     return res.status(500).json("Something went wrong");
   }
 });

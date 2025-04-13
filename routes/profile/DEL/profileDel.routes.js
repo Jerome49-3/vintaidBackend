@@ -11,14 +11,16 @@ const Offer = require("../../../models/Offer");
 router.delete("/profile/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route /profile/:id (DELETE)");
   try {
+    console.time("searchUser");
     const userId = req.params.id;
     console.log("userId in /profile/:id (DELETE)", userId);
     const userIdValid = mongoose.Types.ObjectId.isValid(userId);
     console.log("userIdValid in /profile/:id (DELETE)", userIdValid);
+    console.timeEnd("searchUser");
     if (userIdValid) {
       //search User by Id
       const findUserByID = await User.findById(userId);
-      console.log("findUserByID in /profile/:id (DELETE)", findUserByID);
+      console.table("findUserByID in /profile/:id (DELETE)", findUserByID);
       //search public_id's picture of avatar
       if (findUserByID) {
         const imgAvatarToDestroy = findUserByID?.account?.avatar?.public_id;

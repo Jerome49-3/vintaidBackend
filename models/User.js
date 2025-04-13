@@ -64,6 +64,10 @@ const userSchema = new mongoose.Schema({
       default: false,
     },
   },
+  isOnline: {
+    type: Boolean,
+    default: false,
+  },
   stateTk: {
     type: String,
   },
