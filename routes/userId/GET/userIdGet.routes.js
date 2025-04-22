@@ -17,9 +17,7 @@ router.get("/userId/:id", isAuthenticated, async (req, res) => {
   );
   if (userId !== undefined) {
     try {
-      const user = await User.findById(userId).select(
-        "account email isAdmin becomeAdmin emailIsConfirmed loginFailed isLocked newsletter date createdAt expiresAt"
-      );
+      const user = await User.findById(userId).select("-hash -salt");
       console.log("user in /users:id (GET):", user);
       const { accessToken } = await createToken(user);
       // console.log("accessToken in /users:id (GET):", accessToken);

@@ -16,8 +16,17 @@ router.post(
 
     // console.log("req:", req);
     try {
-      const { title, description, price, condition, city, brand, size, color } =
-        req.body;
+      const {
+        title,
+        description,
+        price,
+        quantity,
+        condition,
+        city,
+        brand,
+        size,
+        color,
+      } = req.body;
       // console.log(
       //   "title in /offer/publish:",
       //   title,
@@ -25,9 +34,12 @@ router.post(
       //   "description in /offer/publish:",
       //   description,
       //   "\n",
-      //   "price in /offer/publish:",
-      //   price,
-      //   "\n",
+      // "price in /offer/publish:",
+      // price,
+      // "\n",
+      // "quantity in /offer/publish:",
+      // quantity,
+      // "\n",
       //   "condition in /offer/publish:",
       //   condition,
       //   "\n",
@@ -49,7 +61,7 @@ router.post(
       const picUpload = req.files.pictures;
       // console.log("picUpload on /offer/publish (POST):", picUpload);
       const arrayPictures = Array.isArray(picUpload);
-      // console.log("arrayPictures on /offer/publish (POST):", arrayPictures);
+      console.log("arrayPictures on /offer/publish (POST):", arrayPictures);
       if (req.body !== undefined) {
         // console.log(
         //   "req.user.id in /offer/publish:",
@@ -61,6 +73,7 @@ router.post(
           product_name: title,
           product_description: description,
           product_price: price,
+          product_quantity: quantity,
           product_details: [
             { MARQUE: brand },
             { TAILLE: size },
@@ -97,10 +110,10 @@ router.post(
                       }
                     );
                   });
-                  // console.log(
-                  //   "arrayOfPromises on /offer/publish (POST):",
-                  //   arrayOfPromises
-                  // );
+                  console.table(
+                    "arrayOfPromises on /offer/publish (POST):",
+                    arrayOfPromises
+                  );
                   //**** attendre le fin de l'upload pour tous les fichiers et les stocker dans une constante ****//
                   const result = await Promise.all(arrayOfPromises);
                   // console.log(
@@ -133,10 +146,10 @@ router.post(
                     folder: "vintaid/offer/" + newOffer._id,
                   }
                 );
-                // console.log(
-                //   "resultnotPromise on /offer/publish (POST):",
-                //   result
-                // );
+                console.log(
+                  "resultnotPromise on /offer/publish (POST):",
+                  result
+                );
                 //**** je stocke les données de la conversion en base64 du buffer de l'image dans req ****//
                 req.uploadOneFile = await result;
                 // console.log(

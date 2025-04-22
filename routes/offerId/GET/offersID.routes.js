@@ -21,17 +21,7 @@ router.get("/offer/:id", async (req, res) => {
       });
       console.log("offer in /offers/:id:", offer);
       if (offer) {
-        res.status(200).json({
-          product_name: offer.product_name,
-          product_description: offer.product_description,
-          product_price: offer.product_price,
-          product_details: offer.product_details,
-          offer_solded: offer.offer_solded,
-          product_image: offer.product_image,
-          product_pictures: offer.product_pictures,
-          product_id: offer._id,
-          owner: offer.owner,
-        });
+        res.status(200).json(offer);
       } else {
         return res.status(400).json({ infoUser: "no offer with this id" });
       }

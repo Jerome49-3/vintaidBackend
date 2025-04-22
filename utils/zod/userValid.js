@@ -20,6 +20,11 @@ const userValid = z.object({
   emailIsConfirmed: z.boolean().default(false),
   loginFailed: z.number().nullable(),
   lockDate: z.date().optional(),
+  firstReqUser: z.object({
+    count: z.number().nullable(),
+    date: z.date().optional(),
+  }),
+  firstReqUserAddOneMn: z.date().optional(),
   isLocked: z.boolean().default(false),
   lockUntil: z.date().optional(),
   code: z.string().optional(),

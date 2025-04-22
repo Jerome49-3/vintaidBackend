@@ -7,6 +7,9 @@ const fileUpload = require("express-fileupload");
 // const { message } = require("statuses");
 // const jwt = require("jsonwebtoken");
 
+//middleware
+// const isRateLimited = require("../../middleware/isRateLimited");
+
 //moment.js
 const moment = require("moment/moment.js");
 moment.locale("fr");
@@ -76,8 +79,8 @@ router.post("/login", fileUpload(), async (req, res) => {
     }
     if (user.emailIsConfirmed !== false) {
       const pwdHash = SHA256(password + user.salt).toString(encBase64);
-      console.log("pwdHash !== user.hash:", pwdHash, user.hash);
       if (pwdHash !== user.hash) {
+        console.log("pwdHash !== user.hash:", pwdHash, user.hash);
         try {
           console.log("pwdHash !== user.hash:", pwdHash, user.hash);
           setLockAndCountLoginFailed(user);
@@ -140,6 +143,7 @@ router.post("/login", fileUpload(), async (req, res) => {
         }
       }
     } else {
+      console.log("else if user.emailIsConfirmed !== false");
       try {
         sendEmail(user);
         await user.save();

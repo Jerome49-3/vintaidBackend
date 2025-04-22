@@ -161,9 +161,33 @@ wss.on("connection", (connection, request) => {
     console.log(`Connexion WebSocket fermée pour l'offre ${offerId}`);
   });
 });
-// //******** CALL MIDDLEWARE RATELIMITED ********//
-// const isRateLimited = require("./middleware/isRateLimited.js");
-// app.use(isRateLimited);
+// //******** CALL MIDDLEWARE express-rate-limit ********//
+const { rateLimit } = require("express-rate-limit");
+const authLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: { error: "Too many requests, please try again later." },
+  keyGenerator: (req, res) => {
+    console.log("req.ip in keyGenerator on authLimit:", req.ip);
+
+    req.ip;
+  },
+});
+// const otherLimit = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+//   message: { error: "Too many requests, please try again later." },
+//   keyGenerator: (req, res) => {
+//     console.log("req.ip in keyGenerator on otherLimit:", req.ip);
+
+//     req.ip;
+//   },
+// });
+
 //************ CONFIG ROUTES *****************//
 //Auth
 const signupRoutes = require("./routes/auth/signup.routes.js");
@@ -215,13 +239,14 @@ const sendForgotPsswd = require("./routes/auth/forgotPsswd.routes.js");
 
 //************ CALL ROUTES *****************//
 //Auth
-app.use("/user", signupRoutes);
-app.use("/user", confirmEmail);
-app.use("/user", loginRoutes);
+// app.use("/user", authLimit);
+app.use("/user", authLimit, signupRoutes);
+app.use("/user", authLimit, confirmEmail);
+app.use("/user", authLimit, loginRoutes);
 app.use("/user", verifToken);
 app.use("/user", refreshToken);
-app.use("/user", logOut);
-app.use("/user", sendForgotPsswd);
+app.use("/user", authLimit, logOut);
+app.use("/user", authLimit, sendForgotPsswd);
 //Offers
 app.use(offersPost);
 app.use(offersGet);
@@ -258,6 +283,7 @@ app.use(mssgContactIdPost);
 //code
 app.use(sendCode);
 //sendMail
+app.use("/sendMail", authLimit);
 app.use("/sendMail", sendCode);
 app.use("/sendMail", sendCodeId);
 app.use("/sendMail", sendContact);
