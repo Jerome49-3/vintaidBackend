@@ -245,7 +245,7 @@ app.use("/user", authLimit, confirmEmail);
 app.use("/user", authLimit, loginRoutes);
 app.use("/user", verifToken);
 app.use("/user", refreshToken);
-app.use("/user", authLimit, logOut);
+app.use("/user", logOut);
 app.use("/user", authLimit, sendForgotPsswd);
 //Offers
 app.use(offersPost);
