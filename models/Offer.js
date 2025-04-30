@@ -39,7 +39,8 @@ const Offer = mongoose.model("Offer", {
     required: true,
   },
   isFavorite: {
-    type: Boolean,
+    type: Number,
+    default: 0,
   },
 });
 module.exports = Offer;

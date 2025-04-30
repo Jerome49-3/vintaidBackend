@@ -37,23 +37,14 @@ router.get("/offers", async (req, res) => {
   priceMax = req.query.priceMax ? Number(req.query.priceMax) : 100000;
   try {
     if (
-      title !== "" ||
-      priceMin !== 0 ||
-      priceMax !== 100000 ||
-      sort !== undefined ||
-      page !== 1
+      (title !== "" && title !== undefined,
+      priceMin !== 0 && priceMin !== undefined,
+      priceMax !== 100000 && priceMax !== undefined,
+      sort !== undefined || (page !== 1 && page !== undefined))
     ) {
       // select = "product_name product_price -_id";
       // console.log('page:', page)
-      if (
-        title !== undefined ||
-        priceMin !== undefined ||
-        priceMax !== undefined ||
-        sort === "price-desc" ||
-        sort === "price-asc" ||
-        page !== undefined ||
-        page !== 0
-      ) {
+      if (sort === "price-desc" || sort === "price-asc" || page !== 0) {
         filter.product_name = new RegExp(title, "i");
         // console.log("filter.product_name:", filter.product_name);
       }
@@ -119,7 +110,7 @@ router.get("/offers", async (req, res) => {
         path: "owner",
         select: "account",
       });
-      // console.log("offers in /offers:", offers);
+      console.log("offers in /offers:", offers);
       const offersCounts = await Offer.countDocuments();
       // console.log("offersCounts in /offers:", offersCounts);
       return res

@@ -50,12 +50,12 @@ cloudinary.config({
 //************ JWT *****************//
 const jwt = require("jsonwebtoken");
 //************ MODELS *****************//
-const Offer = require("./models/Offer.js");
-const User = require("./models/User.js");
+// const Offer = require("./models/Offer.js");
+// const User = require("./models/User.js");
 
 //************ utilitaires persos *****************//
-const checkToken = require("./utils/checkToken.js");
-const errorCheckToken = require("./utils/errorCheckToken.js");
+// const checkToken = require("./utils/checkToken.js");
+// const errorCheckToken = require("./utils/errorCheckToken.js");
 //************ CONFIG WEBSOCKET *****************//
 const WebSocket = require("ws");
 const http = require("http");
@@ -162,19 +162,19 @@ wss.on("connection", (connection, request) => {
   });
 });
 // //******** CALL MIDDLEWARE express-rate-limit ********//
-const { rateLimit } = require("express-rate-limit");
-const authLimit = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-  message: { error: "Too many requests, please try again later." },
-  keyGenerator: (req, res) => {
-    console.log("req.ip in keyGenerator on authLimit:", req.ip);
+// const { rateLimit } = require("express-rate-limit");
+// const authLimit = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+//   message: { error: "Too many requests, please try again later." },
+//   keyGenerator: (req, res) => {
+//     console.log("req.ip in keyGenerator on authLimit:", req.ip);
 
-    req.ip;
-  },
-});
+//     req.ip;
+//   },
+// });
 // const otherLimit = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutes
 //   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
@@ -236,17 +236,20 @@ const sendContact = require("./routes/sendMail/sendContact.routes.js");
 const resendEmailPsswd = require("./routes/resendEmailPsswd/resendEmailPsswd.routes.js");
 //forgotPsswd
 const sendForgotPsswd = require("./routes/auth/forgotPsswd.routes.js");
+//favorites
+const addFav = require("./routes/updateFavOffer/addFavOffer.route.js");
+const suppFav = require("./routes/updateFavOffer/suppFavOffer.route.js");
 
 //************ CALL ROUTES *****************//
 //Auth
 // app.use("/user", authLimit);
-app.use("/user", authLimit, signupRoutes);
-app.use("/user", authLimit, confirmEmail);
-app.use("/user", authLimit, loginRoutes);
+app.use("/user", signupRoutes);
+app.use("/user", confirmEmail);
+app.use("/user", loginRoutes);
 app.use("/user", verifToken);
 app.use("/user", refreshToken);
 app.use("/user", logOut);
-app.use("/user", authLimit, sendForgotPsswd);
+app.use("/user", sendForgotPsswd);
 //Offers
 app.use(offersPost);
 app.use(offersGet);
@@ -283,13 +286,16 @@ app.use(mssgContactIdPost);
 //code
 app.use(sendCode);
 //sendMail
-app.use("/sendMail", authLimit);
 app.use("/sendMail", sendCode);
 app.use("/sendMail", sendCodeId);
 app.use("/sendMail", sendContact);
 
 //resendEmailPsswd
 app.use(resendEmailPsswd);
+
+//favorites
+app.use(addFav);
+app.use(suppFav);
 
 //************ BASIC ROUTES *****************//
 app.get("/", (req, res) => {
