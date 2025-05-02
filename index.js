@@ -50,18 +50,48 @@ cloudinary.config({
 //************ JWT *****************//
 const jwt = require("jsonwebtoken");
 //************ MODELS *****************//
-// const Offer = require("./models/Offer.js");
-// const User = require("./models/User.js");
+const Offer = require("./models/Offer.js");
+const User = require("./models/User.js");
 
 //************ utilitaires persos *****************//
 // const checkToken = require("./utils/checkToken.js");
 // const errorCheckToken = require("./utils/errorCheckToken.js");
 //************ CONFIG WEBSOCKET *****************//
+const socketio = require("socket.io");
 const WebSocket = require("ws");
 const http = require("http");
 
 // Création du serveur HTTP avant son utilisation
 const server = http.createServer(app);
+//config server by io
+//*********** process.env.NODE_ENV === "developpement" **************/
+const io = socketio(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  },
+});
+//*********** process.env.NODE_ENV === "production" **************/
+// const io = socketio(server, {
+//   cors: {
+//     origin: "https://vintaid.netlify.app",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   },
+// });
+//*********** REALTIME OFFER **************/
+Offer.watch([], { fullDocument: "updateLookup" }).on(
+  "change",
+  (offerUpdated) => {
+    io.emit("offerUpdated", offerUpdated);
+    console.log("offerUpdated:", offerUpdated);
+  }
+);
+User.watch([], { fullDocument: "updateLookup" }).on("change", (userUpdated) => {
+  io.emit("userUpdated", userUpdated);
+  console.log("userUpdated:", userUpdated);
+});
 // console.log(`server:`, server);
 const wss = new WebSocket.Server({ noServer: true });
 // console.log(`wss:`, wss);

@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
+//models
+const Offer = require("../../models/Offer");
 
 router.put("/suppFavOffer/:id", async (req, res) => {
   console.log("je suis sur la route suppFavOffer/:id (PUT)");
