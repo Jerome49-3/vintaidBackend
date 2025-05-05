@@ -71,6 +71,10 @@ const io = socketio(server, {
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
+  connectionStateRecovery: {
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    skipMiddlewares: true,
+  },
 });
 //*********** process.env.NODE_ENV === "production" **************/
 // const io = socketio(server, {
@@ -79,6 +83,10 @@ const io = socketio(server, {
 //     credentials: true,
 //     methods: ["GET", "POST", "PUT", "DELETE"],
 //   },
+// connectionStateRecovery: {
+//   maxDisconnectionDuration: 2 * 60 * 1000,
+//   skipMiddlewares: true,
+// },
 // });
 //*********** REALTIME OFFER **************/
 Offer.watch([], { fullDocument: "updateLookup" }).on(
@@ -86,8 +94,10 @@ Offer.watch([], { fullDocument: "updateLookup" }).on(
   (offerUpdated) => {
     io.emit("offerUpdated", offerUpdated);
     console.log("offerUpdated:", offerUpdated);
+    console.log("io:", io);
   }
 );
+//*********** REALTIME USER **************/
 User.watch([], { fullDocument: "updateLookup" }).on("change", (userUpdated) => {
   io.emit("userUpdated", userUpdated);
   console.log("userUpdated:", userUpdated);
