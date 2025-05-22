@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const createToken = async (user) => {
-  console.log("user in createToken:", user);
+  // console.log("user in createToken:", user);
 
   const accessToken = jwt.sign(
     {

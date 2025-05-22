@@ -65,29 +65,29 @@ const http = require("http");
 const server = http.createServer(app);
 //config server by io
 //*********** process.env.NODE_ENV === "developpement" **************/
+// const io = socketio(server, {
+//   cors: {
+//     origin: "http://localhost:5173",
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true,
+//   },
+//   connectionStateRecovery: {
+//     maxDisconnectionDuration: 2 * 60 * 1000,
+//     skipMiddlewares: true,
+//   },
+// });
+//*********** process.env.NODE_ENV === "production" **************/
 const io = socketio(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: "https://vintaid.netlify.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
   },
   connectionStateRecovery: {
     maxDisconnectionDuration: 2 * 60 * 1000,
     skipMiddlewares: true,
   },
 });
-//*********** process.env.NODE_ENV === "production" **************/
-// const io = socketio(server, {
-//   cors: {
-//     origin: "https://vintaid.netlify.app",
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//   },
-// connectionStateRecovery: {
-//   maxDisconnectionDuration: 2 * 60 * 1000,
-//   skipMiddlewares: true,
-// },
-// });
 //*********** REALTIME OFFER **************/
 Offer.watch([], { fullDocument: "updateLookup" }).on(
   "change",

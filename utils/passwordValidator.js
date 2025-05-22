@@ -1,14 +1,14 @@
 const passwordValidator = {
   // Regular expression for password validation
   PASSWORD_REGEX:
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:'",.<>/?])(?!.*\s).{16,}$/,
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};:'",.<>/?])(?!.*\s).{8,}$/,
 
   // Function to validate password
   validatePassword: (password) => {
     if (!password) return { isValid: false, message: "Password is required" };
 
     const checks = {
-      length: password.length >= 16,
+      length: password.length >= 8,
       lowercase: /[a-z]/.test(password),
       uppercase: /[A-Z]/.test(password),
       number: /\d/.test(password),
@@ -18,7 +18,7 @@ const passwordValidator = {
 
     const failedChecks = [];
 
-    if (!checks.length) failedChecks.push("be at least 16 characters long");
+    if (!checks.length) failedChecks.push("be at least 8 characters long");
     if (!checks.lowercase)
       failedChecks.push("include at least one lowercase letter");
     if (!checks.uppercase)
