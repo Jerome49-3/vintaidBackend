@@ -79,7 +79,7 @@ const server = http.createServer(app);
 //*********** process.env.NODE_ENV === "production" **************/
 const io = socketio(server, {
   cors: {
-    origin: "https://vintaid.netlify.app",
+    origin: process.env.URL_CORS_IO,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
