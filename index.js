@@ -8,24 +8,19 @@ app.use(express.json());
 
 //************ CONFIG CORS *****************//
 const cors = require("cors");
-if (process.env.NODE_ENV === "developpement") {
-  console.log("process.env.NODE_ENV on index.js:", process.env.NODE_ENV);
-  app.use(
-    cors({
-      origin: "http://localhost:5173",
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE"],
-    })
-  );
-} else {
-  app.use(
-    cors({
-      origin: "https://vintaid.netlify.app",
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE"],
-    })
-  );
-}
+// if (process.env.NODE_ENV === "developpement") {
+console.log(
+  "process.env.URL_CORS_FRONTEND CORS on index.js:",
+  process.env.URL_CORS_FRONTEND
+);
+app.use(
+  cors({
+    origin: process.env.URL_CORS_FRONTEND,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+// }
 //************ COOKIE-PARSER *****************//
 // a verifier si encore utiliser > car remplacer par jwt si not use > remove lib and import
 const cookieParser = require("cookie-parser");
@@ -33,12 +28,13 @@ app.use(cookieParser());
 //************ COOKIE *****************//
 const cookie = require("cookie");
 //************ CONFIG MONGOOSE *****************//
+// const mongooseConnection = require("./utils/configConnections/mongooseConnection.js");
+// mongooseConnection();
+
 const mongoose = require("mongoose");
 mongoose.connect(process.env.MONGODB_URI);
-
 //************ CONFIG STRIPE *****************//
 const stripe = require("stripe")(process.env.STRIPE_KEY_SECRET);
-
 //************ CONFIG CLOUDINARY *****************//
 const cloudinary = require("cloudinary").v2;
 cloudinary.config({
@@ -64,22 +60,14 @@ const http = require("http");
 // Création du serveur HTTP avant son utilisation
 const server = http.createServer(app);
 //config server by io
-//*********** process.env.NODE_ENV === "developpement" **************/
-// const io = socketio(server, {
-//   cors: {
-//     origin: "http://localhost:5173",
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     credentials: true,
-//   },
-//   connectionStateRecovery: {
-//     maxDisconnectionDuration: 2 * 60 * 1000,
-//     skipMiddlewares: true,
-//   },
-// });
-//*********** process.env.NODE_ENV === "production" **************/
+//*********** SOCKET IO" **************/
+console.log(
+  "process.env.URL_CORS_FRONTEND IO on index.js:",
+  process.env.URL_CORS_FRONTEND
+);
 const io = socketio(server, {
   cors: {
-    origin: process.env.URL_CORS_IO,
+    origin: process.env.URL_CORS_FRONTEND,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   },
@@ -89,60 +77,26 @@ const io = socketio(server, {
   },
 });
 //*********** REALTIME OFFER **************/
-Offer.watch([], { fullDocument: "updateLookup" }).on(
-  "change",
-  (offerUpdated) => {
+Offer.watch([], { fullDocument: "updateLookup" })
+  .on("change", (offerUpdated) => {
     io.emit("offerUpdated", offerUpdated);
     console.log("offerUpdated:", offerUpdated);
     console.log("io:", io);
-  }
-);
+  })
+  .on("error", (err) => {
+    console.error("changeStram error", err);
+  });
 //*********** REALTIME USER **************/
-User.watch([], { fullDocument: "updateLookup" }).on("change", (userUpdated) => {
-  io.emit("userUpdated", userUpdated);
-  console.log("userUpdated:", userUpdated);
-});
+User.watch([], { fullDocument: "updateLookup" })
+  .on("change", (userUpdated) => {
+    io.emit("userUpdated", userUpdated);
+    console.log("userUpdated:", userUpdated);
+  })
+  .on("error", (err) => {
+    console.error("changeStram error", err);
+  });
 // console.log(`server:`, server);
 const wss = new WebSocket.Server({ noServer: true });
-// console.log(`wss:`, wss);
-
-// mongoose.connection.once("open", () => {
-//   console.log("Connexion Mongoose établie");
-
-//   const User = mongoose.connection.collection("User");
-//   const Offer = mongoose.connection.collection("Offer");
-//   const Contact = mongoose.connection.collection("Contact");
-
-//   const setupChangeStream = (collection, eventType) => {
-//     const changeStream = collection.watch();
-
-//     changeStream.on("change", (change) => {
-//       console.log(`Change detected in ${collection.name}:`, {
-//         operationType: change.operationType,
-//         documentKey: change.documentKey,
-//       });
-
-//       wss.clients.forEach((client) => {
-//         client.send(
-//           JSON.stringify({
-//             type: eventType,
-//             timestamp: new Date().toISOString(),
-//           })
-//         );
-//       });
-//     });
-
-//     changeStream.on("error", (error) => {
-//       console.error(`Error in ${collection.name} change stream:`, error);
-//     });
-
-//     return changeStream;
-//   };
-
-//   const changeStreamUsers = setupChangeStream(User, "REFRESH_USERS");
-//   const changeStreamOffers = setupChangeStream(Offer, "REFRESH_OFFERS");
-//   const changeStreamContacts = setupChangeStream(Contact, "REFRESH_CONTACT");
-// });
 server.on("upgrade", (request, socket, head) => {
   const pathname = new URL(request.url, `http://${request.headers.host}`)
     .pathname;
@@ -155,8 +109,8 @@ server.on("upgrade", (request, socket, head) => {
     socket.destroy();
   }
 });
-const clients = {};
-let cookObj = {};
+// const clients = {};
+// let cookObj = {};
 wss.on("connection", (connection, request) => {
   const pathname = new URL(request.url, `http://${request.headers.host}`)
     .pathname;
@@ -201,32 +155,6 @@ wss.on("connection", (connection, request) => {
     console.log(`Connexion WebSocket fermée pour l'offre ${offerId}`);
   });
 });
-// //******** CALL MIDDLEWARE express-rate-limit ********//
-// const { rateLimit } = require("express-rate-limit");
-// const authLimit = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   limit: 5, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-//   message: { error: "Too many requests, please try again later." },
-//   keyGenerator: (req, res) => {
-//     console.log("req.ip in keyGenerator on authLimit:", req.ip);
-
-//     req.ip;
-//   },
-// });
-// const otherLimit = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
-//   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-//   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
-//   message: { error: "Too many requests, please try again later." },
-//   keyGenerator: (req, res) => {
-//     console.log("req.ip in keyGenerator on otherLimit:", req.ip);
-
-//     req.ip;
-//   },
-// });
 
 //************ CONFIG ROUTES *****************//
 //Auth
