@@ -48,7 +48,7 @@ router.post("/verifyToken", async (req, res) => {
       newError.name === "TokenExpiredError" &&
       newError.message === "jwt expired"
     ) {
-      res.json({ errorMessage: newError.message });
+      res.status(401).json({ message: newError.message });
     }
   }
 });

@@ -10,11 +10,11 @@ const User = require("../../../models/User.js");
 router.get("/profile/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route /profile (GET)");
   const userId = req.params.id;
-  console.log("userId:", userId);
+  // console.log("userId:", userId);
   const user = await User.findById(userId);
-  console.log("user in /profile/:id:", user);
+  // console.log("user in /profile/:id:", user);
   const { accessToken } = await createToken(user);
-  console.log("accessToken in /profile/:id:", accessToken);
+  // console.log("accessToken in /profile/:id:", accessToken);
   try {
     if (!user) {
       res.send(401).json({ message: "unauthorized: please login" });

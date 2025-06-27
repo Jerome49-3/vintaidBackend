@@ -10,15 +10,15 @@ router.get("/userId/:id", isAuthenticated, async (req, res) => {
   console.log("je suis sur la route in /users/:id (GET):");
   // console.log("req.user:", req.user);
   const userId = req.params.id;
-  console.log("userId:", userId);
-  console.log(
-    "mongoose.Types.ObjectId.isValid(id):",
-    mongoose.Types.ObjectId.isValid(userId)
-  );
+  // console.log("userId:", userId);
+  // console.log(
+  //   "mongoose.Types.ObjectId.isValid(id):",
+  //   mongoose.Types.ObjectId.isValid(userId)
+  // );
   if (userId !== undefined) {
     try {
       const user = await User.findById(userId).select("-hash -salt");
-      console.log("user in /users:id (GET):", user);
+      // console.log("user in /users:id (GET):", user);
       const { accessToken } = await createToken(user);
       // console.log("accessToken in /users:id (GET):", accessToken);
       res.status(200).json({ token: accessToken });

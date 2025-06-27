@@ -60,7 +60,7 @@ router.get("/refreshToken", async (req, res) => {
         }
       }
     } catch (error) {
-      return res.status(400).send("token invalide");
+      return res.status(401).send("token invalid");
     }
   }
 });

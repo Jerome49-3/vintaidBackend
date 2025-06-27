@@ -64,17 +64,17 @@ const userSchema = new mongoose.Schema({
       default: false,
     },
   },
-  firstReqUser: {
-    count: {
-      type: Number,
-    },
-    date: {
-      type: Date,
-    },
-  },
-  firstReqUserAddOneMn: {
-    type: Date,
-  },
+  // firstReqUser: {
+  //   count: {
+  //     type: Number,
+  //   },
+  //   date: {
+  //     type: Date,
+  //   },
+  // },
+  // firstReqUserAddOneMn: {
+  //   type: Date,
+  // },
   isOnline: {
     type: Boolean,
     default: false,
