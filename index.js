@@ -8,7 +8,7 @@ app.use(express.json());
 
 //************ CONFIG CORS *****************//
 const cors = require("cors");
-// if (process.env.NODE_ENV === "developpement") {
+
 console.log(
   "process.env.URL_CORS_FRONTEND CORS on index.js:",
   process.env.URL_CORS_FRONTEND
@@ -20,7 +20,7 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
-// }
+
 //************ COOKIE-PARSER *****************//
 // a verifier si encore utiliser > car remplacer par jwt si not use > remove lib and import
 const cookieParser = require("cookie-parser");
