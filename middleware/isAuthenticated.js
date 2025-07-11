@@ -38,10 +38,10 @@ const isAuthenticated = async (req, res, next) => {
           const decoded = jwt.verify(NewRefreshToken, process.env.JWT_SECRET);
           // console.log("decoded NewRefreshToken in isAuthenticated:", decoded);
           const user = await User.findById(decoded._id);
-          console.log(
-            "user find with NewRefreshToken in isAuthenticated:",
-            user
-          );
+          // console.log(
+          //   "user find with NewRefreshToken in isAuthenticated:",
+          //   user
+          // );
           const { accessToken, refreshToken } = await createToken(user);
           if (process.env.NODE_ENV === "developpement") {
             res
@@ -55,7 +55,7 @@ const isAuthenticated = async (req, res, next) => {
               })
               .header("Authorization", accessToken);
             req.user = user;
-            console.log(" req.user DEV in isAuthenticated:", req.user);
+            // console.log(" req.user DEV in isAuthenticated:", req.user);
             next();
           } else {
             res
@@ -68,10 +68,10 @@ const isAuthenticated = async (req, res, next) => {
               })
               .header("Authorization", accessToken);
             req.refreshToken = accessToken;
-            console.log(
-              " req.refreshToken in isAuthenticated:",
-              req.refreshToken
-            );
+            // console.log(
+            //   " req.refreshToken in isAuthenticated:",
+            //   req.refreshToken
+            // );
             const user = await User.findById(decoded)
               .populate({
                 path: "account",
@@ -81,7 +81,7 @@ const isAuthenticated = async (req, res, next) => {
               })
               .select("-hash -salt");
             req.user = user;
-            console.log(" req.user PROD in isAuthenticated:", req.user);
+            // console.log(" req.user PROD in isAuthenticated:", req.user);
             next();
           }
         } else {

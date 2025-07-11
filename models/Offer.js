@@ -17,12 +17,6 @@ const Offer = mongoose.model("Offer", {
     max: 100000,
     required: true,
   },
-  product_quantity: {
-    type: Number,
-    min: 1,
-    max: 100,
-    required: true,
-  },
   product_details: Array,
   product_image: Object,
   product_pictures: Array,
